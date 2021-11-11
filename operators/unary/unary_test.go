@@ -1,0 +1,42 @@
+package unary
+
+import (
+	"emorisse.fr/calcul/operators/number"
+	"testing"
+)
+
+func TestNew__NilArgument(t *testing.T) {
+	_, err := New('-', nil)
+
+	if err == nil {
+		t.Logf("Shouldn't be nil but got nil")
+		t.Fail()
+	}
+}
+
+func TestNew__WrongSymbol(t *testing.T) {
+	_, err := New('a', number.New(4))
+
+	if err == nil {
+		t.Logf("Shouldn't be nil but go %s", err)
+		t.Fail()
+	}
+}
+
+func TestOpUnary_Eval(t *testing.T) {
+	test('-', 4, -4, t)
+	test('+', 4, 4, t)
+}
+
+func test(symbol rune, value, expected float64, t *testing.T) {
+	una, err := New(symbol, number.New(value))
+
+	if err != nil {
+		t.Logf("Should be nil but got %s", err)
+		t.Fail()
+	}
+
+	if una.Eval() != expected {
+		t.Logf("Should be %f but got %f", expected, una.Eval())
+	}
+}
