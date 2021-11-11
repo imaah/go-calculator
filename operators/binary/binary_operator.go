@@ -31,6 +31,10 @@ func (b *opBinary) Eval() float64 {
 
 //New Creates a new binary operator
 func New(symbol rune, left, right operators.Operation) (operators.Operation, error) {
+	if left == nil || right == nil {
+		return nil, errors.New("ArgumentIsNil")
+	}
+
 	if utils.RuneArrayContains(KnownSymbols, symbol) {
 		operator := opBinary{
 			Right:  right,

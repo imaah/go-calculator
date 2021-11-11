@@ -27,6 +27,10 @@ func (b *opUnary) Eval() float64 {
 
 //New Creates a new unary operator
 func New(symbol rune, right operators.Operation) (operators.Operation, error) {
+	if right == nil {
+		return nil, errors.New("ArgumentIsNil")
+	}
+
 	if utils.RuneArrayContains(KnownSymbols, symbol) {
 		operator := opUnary{
 			Right:  right,

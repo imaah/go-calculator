@@ -29,6 +29,9 @@ func init() {
 
 //New Creates a new function operator
 func New(functionName string, value operators.Operation) (operators.Operation, error) {
+	if value == nil {
+		return nil, errors.New("ArgumentIsNil")
+	}
 	if function, contains := functions[functionName]; contains {
 		return &opFunction{
 			FunctionName: functionName,
@@ -49,6 +52,9 @@ func NewUsingTempFunc(function OpFunc, value operators.Operation) operators.Oper
 
 //RegisterFunction Allows to register a new function for the function operator
 func RegisterFunction(name string, function OpFunc) error {
+	if function == nil {
+		return errors.New("ArgumentIsNil")
+	}
 	if _, contains := functions[name]; contains {
 		return errors.New("AlreadyRegisteredFunction")
 	}
