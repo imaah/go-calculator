@@ -7,7 +7,7 @@ import (
 )
 
 func TestNew__WrongFunction(t *testing.T) {
-	_, err := New("a", number.New(1))
+	var _, err = New("a", number.New(1))
 
 	if err == nil {
 		t.Logf("Shouldn't be nil but go %s", err)
@@ -17,7 +17,7 @@ func TestNew__WrongFunction(t *testing.T) {
 }
 
 func TestNew__NilArgument(t *testing.T) {
-	_, err := New("cos", nil)
+	var _, err = New("cos", nil)
 
 	if err == nil {
 		t.Logf("Shouldn't be nil")
@@ -39,7 +39,7 @@ func TestNewUsingTempFunc(t *testing.T) {
 }
 
 func TestRegisterFunction__NilArgument(t *testing.T) {
-	err := RegisterFunction("double", nil)
+	var err = RegisterFunction("double", nil)
 
 	if err == nil {
 		t.Logf("Shouldn't be nil")
@@ -48,7 +48,7 @@ func TestRegisterFunction__NilArgument(t *testing.T) {
 }
 
 func TestRegisterFunction__Duplicate(t *testing.T) {
-	err := RegisterFunction("sin", double)
+	var err = RegisterFunction("sin", double)
 
 	if err == nil {
 		t.Logf("Shouldn't be nil")
@@ -57,7 +57,7 @@ func TestRegisterFunction__Duplicate(t *testing.T) {
 }
 
 func TestRegisterFunction(t *testing.T) {
-	err := RegisterFunction("double", double)
+	var err = RegisterFunction("double", double)
 
 	if err != nil {
 		t.Logf("Should be nil but got %s", err)
@@ -72,7 +72,7 @@ func double(val float64) float64 {
 }
 
 func testFunc(function OpFunc, val, expected float64, t *testing.T) {
-	bin := NewUsingTempFunc(function, number.New(val))
+	var bin = NewUsingTempFunc(function, number.New(val))
 
 	if bin.Eval() != expected {
 		t.Logf("Should be %f but got %f", expected, bin.Eval())
@@ -80,7 +80,7 @@ func testFunc(function OpFunc, val, expected float64, t *testing.T) {
 }
 
 func test(function string, val, expected float64, t *testing.T) {
-	bin, err := New(function, number.New(val))
+	var bin, err = New(function, number.New(val))
 
 	if err != nil {
 		t.Logf("Should be nil but got %s", err)

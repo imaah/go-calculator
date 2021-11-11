@@ -6,7 +6,7 @@ import (
 )
 
 func TestNew__WrongSymbol(t *testing.T) {
-	_, err := New('a', number.New(4), number.New(4))
+	var _, err = New('a', number.New(4), number.New(4))
 
 	if err == nil {
 		t.Logf("Shouldn't be nil but go %s", err)
@@ -16,7 +16,7 @@ func TestNew__WrongSymbol(t *testing.T) {
 }
 
 func TestNew__NilArgument(t *testing.T) {
-	_, err := New('-', nil, nil)
+	var _, err = New('-', nil, nil)
 
 	if err == nil {
 		t.Logf("Shouldn't be nil but got nil")
@@ -32,7 +32,7 @@ func TestOpBinary_Eval(t *testing.T) {
 }
 
 func test(symbol rune, val1, val2, expected float64, t *testing.T) {
-	bin, err := New(symbol, number.New(val1), number.New(val2))
+	var bin, err = New(symbol, number.New(val1), number.New(val2))
 
 	if err != nil {
 		t.Logf("Should be nil but got %s", err)
