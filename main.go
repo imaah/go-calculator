@@ -4,6 +4,7 @@ import (
 	"emorisse.fr/calcul/operators/binary"
 	"emorisse.fr/calcul/operators/function"
 	"emorisse.fr/calcul/operators/number"
+	"emorisse.fr/calcul/parser"
 	"fmt"
 )
 
@@ -19,4 +20,7 @@ func main() {
 	var div, _ = binary.New('/', tpftc4, s24mftt)
 
 	fmt.Println(div.Eval())
+
+	parser.Parse("1.12 + 2 + 3 / 2 * 5")
+	parser.Parse("((2 + 5) * cos(4)) / (sin(24) - (4 * 12))")
 }
