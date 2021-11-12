@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Go calculator</title>
 </head>
-<body>
+    <body>
     <h1>Welcome to a wonderful calculator using go !</h1>
 
     <label> Here you put your calculation :
@@ -15,42 +15,50 @@
     </label>
     <button id="submit">=</button>
     <p>Result : <span id="result"></span></p>
-<style>
+    <script>
+        (() => {
+            let submit = document.querySelector("#submit");
+            let calculation = document.querySelector("#calculation");
+            let result = document.querySelector("#result");
 
-</style>
-<script>
-    (() => {
-        let submit = document.querySelector("#submit");
-        let calculation = document.querySelector("#calculation");
-        let result = document.querySelector("#result");
-
-        submit.addEventListener("click", async () => {
-            if(!submit.getAttribute("disabled")) {
-
-                let res = await fetch("/api/calculate", {
-                    method: 'post',
-                    body: JSON.stringify({
-                        computation: calculation.value
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if(res.status === 200) {
-                    let json = await res.json();
-
-                    if(json.error) {
-                        alert(json.error);
-                    } else {
-                        result.innerText = json.result;
-                    }
-                } else {
-                    alert("An error occurred, please try to refresh the page");
+            calculation.addEventListener('keyup', (evt) => {
+                if (evt.key.toLowerCase() === 'enter') {
+                    submit.dispatchEvent(new Event('click'));
                 }
-            }
-        })
-    })()
-</script>
+            });
+
+            submit.addEventListener("click", async () => {
+                if (!submit.getAttribute("disabled")) {
+
+                    let res = await fetch("/api/calculate", {
+                        method: 'post',
+                        body: JSON.stringify({
+                            computation: calculation.value
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (res.status === 200) {
+                        let json = await res.json();
+
+                        if (json.error) {
+                            alert(json.error);
+                        } else {
+                            result.innerText = json.result;
+                        }
+                    } else {
+                        alert("An error occurred, please try to refresh the page");
+                    }
+                }
+            })
+        })()
+    </script>
 </body>
+<style>
+    #calculation {
+        width: 50%;
+    }
+</style>
 </html>
