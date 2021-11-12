@@ -25,6 +25,15 @@ func init() {
 	_ = RegisterFunction("cos", math.Cos)
 	_ = RegisterFunction("sin", math.Sin)
 	_ = RegisterFunction("tan", math.Tan)
+	_ = RegisterFunction("sqrt", math.Sqrt)
+	_ = RegisterFunction("atan", math.Atan)
+	_ = RegisterFunction("acos", math.Acos)
+	_ = RegisterFunction("asin", math.Asin)
+	_ = RegisterFunction("log", math.Log)
+	_ = RegisterFunction("ceil", math.Ceil)
+	_ = RegisterFunction("floor", math.Floor)
+	_ = RegisterFunction("round", math.Round)
+	_ = RegisterFunction("exp", math.Exp)
 }
 
 //New Creates a new function operator
