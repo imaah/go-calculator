@@ -3,6 +3,7 @@ package parser
 import (
 	"emorisse.fr/calcul/operators"
 	"emorisse.fr/calcul/operators/binary"
+	"emorisse.fr/calcul/operators/function"
 	"emorisse.fr/calcul/operators/number"
 	"emorisse.fr/calcul/operators/unary"
 	"errors"
@@ -15,6 +16,7 @@ import (
 var regexInnerParenthesis *regexp.Regexp
 var binaryExpressionRegex *regexp.Regexp
 var unaryExpressionRegex *regexp.Regexp
+var functionExpressionRegex *regexp.Regexp
 var subGroupRegex *regexp.Regexp
 
 func init() {
@@ -29,14 +31,13 @@ func init() {
 
 	binaryExpressionRegex = regexp.MustCompile(binaryRegexStr)
 	unaryExpressionRegex = regexp.MustCompile(unaryRegexStr)
+	functionExpressionRegex = regexp.MustCompile("^ *([a-z][a-z0-9]*) *\\((:[0-9]+|[0-9]+(?:.[0-9]+)?)\\)$")
 }
 
 func Parse(str string) (operators.Operation, error) {
 	var group []byte
-	fmt.Println(str)
 	var byteStr = makeCalculusPriority([]byte(str))
 	str = string(byteStr)
-	fmt.Println(string(byteStr))
 
 	var groups = make(map[string]string)
 	group = regexInnerParenthesis.Find(byteStr)
@@ -51,9 +52,7 @@ func Parse(str string) (operators.Operation, error) {
 		group = regexInnerParenthesis.Find(byteStr)
 	}
 
-	fmt.Println(groups)
 	groups = cleanMap(groups)
-	fmt.Println(groups)
 	var lastElem = getLastIndex(groups)
 	return buildOperator(groups, lastElem)
 }
@@ -62,19 +61,19 @@ func buildOperator(groups map[string]string, index int) (operators.Operation, er
 	var key = fmt.Sprintf(":%d", index)
 	var elemStr = groups[key]
 	var elem = []byte(elemStr)
-	fmt.Println("--", key)
 
 	if isBinaryExpression(elem) {
 		return getBinaryExpression(elem, groups)
 	}
 
 	if isUnaryExpression(elem) {
-		fmt.Println("heh")
-
 		return getUnaryExpression(elem, groups)
 	}
 
-	//TODO : check if it is a function expression
+	if isFunctionExpression(elem) {
+		return getFunctionExpression(elem, groups)
+	}
+
 	//TODO : check if it is a number expression
 
 	//TODO : find the other operations inside the current expression then build it !
@@ -83,8 +82,34 @@ func buildOperator(groups map[string]string, index int) (operators.Operation, er
 	return nil, errors.New("UnimplementedMethod")
 }
 
+func isFunctionExpression(expression []byte) bool {
+	return functionExpressionRegex.Match(expression)
+}
+
+func getFunctionExpression(expression []byte, groups map[string]string) (operators.Operation, error) {
+	var value operators.Operation
+	var err error
+	var functionName = ""
+
+	var regexGroups = functionExpressionRegex.FindAllSubmatch(expression, -1)[0]
+
+	if len(regexGroups) == 3 {
+		functionName = string(regexGroups[1])
+		value, err = parseElement(regexGroups[2], groups)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	if value != nil && functionName != "" {
+		return function.New(functionName, value)
+	}
+
+	return nil, errors.New("IllegalExpression")
+}
+
 func isUnaryExpression(expression []byte) bool {
-	fmt.Println(string(expression))
 	return unaryExpressionRegex.Match(expression)
 }
 
@@ -94,10 +119,6 @@ func getUnaryExpression(expression []byte, groups map[string]string) (operators.
 	var symbol = ' '
 
 	var regexGroups = unaryExpressionRegex.FindAllSubmatch(expression, -1)[0]
-
-	for _, group := range regexGroups {
-		fmt.Println(string(group))
-	}
 
 	if len(regexGroups) == 3 {
 		symbol = rune(regexGroups[1][0])
@@ -154,8 +175,6 @@ func parseElement(expression []byte, groups map[string]string) (operators.Operat
 	} else {
 		var num float64
 		num, err = strconv.ParseFloat(string(expression), 64)
-
-		fmt.Println(num)
 
 		if err == nil {
 			elem = number.New(num)
