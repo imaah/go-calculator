@@ -36,7 +36,7 @@ func init() {
 
 func Parse(str string) (operators.Operation, error) {
 	var group []byte
-	var byteStr = makeCalculusPriority([]byte(str))
+	var byteStr = addParenthesisAround(makeCalculusPriority([]byte(str)))
 	str = string(byteStr)
 
 	var groups = make(map[string]string)
@@ -74,12 +74,7 @@ func buildOperator(groups map[string]string, index int) (operators.Operation, er
 		return getFunctionExpression(elem, groups)
 	}
 
-	//TODO : check if it is a number expression
-
-	//TODO : find the other operations inside the current expression then build it !
-	//TODO : build the operation according to the expression found.
-
-	return nil, errors.New("UnimplementedMethod")
+	return parseElement(elem, groups)
 }
 
 func isFunctionExpression(expression []byte) bool {
@@ -173,8 +168,9 @@ func parseElement(expression []byte, groups map[string]string) (operators.Operat
 
 		elem, err = buildOperator(groups, index)
 	} else {
+		var exprStr = strings.Trim(string(expression), "()")
 		var num float64
-		num, err = strconv.ParseFloat(string(expression), 64)
+		num, err = strconv.ParseFloat(exprStr, 64)
 
 		if err == nil {
 			elem = number.New(num)
