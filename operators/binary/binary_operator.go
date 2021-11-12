@@ -10,6 +10,11 @@ import (
 //KnownSymbols all symbols that can be used for a binary operator
 var KnownSymbols = []rune{'-', '+', '*', '/', '^', '%'}
 
+var OperatorPriority = [][]rune{
+	{'*', '/', '^', '%'},
+	{'-', '+'},
+}
+
 type opBinary struct {
 	operators.Operation
 	Left, Right operators.Operation
@@ -30,7 +35,6 @@ func (b *opBinary) Eval() float64 {
 		return math.Pow(b.Left.Eval(), b.Right.Eval())
 	case '%':
 		return math.Mod(b.Left.Eval(), b.Right.Eval())
-
 	}
 	return 0
 }

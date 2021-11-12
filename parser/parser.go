@@ -22,7 +22,7 @@ var functionExpressionRegex *regexp.Regexp
 var subGroupRegex *regexp.Regexp
 
 func init() {
-	var innerParenthesisRegexStr = fmt.Sprintf("[+-]?[a-z]*\\(-?[0-9.a-z%s :]+\\)",
+	var innerParenthesisRegexStr = fmt.Sprintf("[+-]?(?:[a-z][a-z0-9]+)?\\(-?[0-9.a-z%s :]+\\)",
 		strings.Replace(string(binary.KnownSymbols), "-", "\\-", 1))
 
 	var binaryRegexStr = fmt.Sprintf("^\\(?(:[0-9]+|-?[0-9]+(?:.[0-9]+)?) *([%s]) *(:[0-9]+|-?[0-9]+(?:.[0-9]+)?)\\)?$",
@@ -44,6 +44,7 @@ func Parse(str string) (operators.Operation, error) {
 	str = string(byteStr)
 
 	var groups = make(groupMap)
+	fmt.Println(str)
 	group = regexInnerParenthesis.Find(byteStr)
 
 	for i := 0; group != nil; {
@@ -57,6 +58,7 @@ func Parse(str string) (operators.Operation, error) {
 	}
 
 	groups = cleanMap(groups)
+	fmt.Println(groups)
 	var lastElem = getLastIndex(groups)
 	return buildOperator(groups, lastElem)
 }
@@ -247,21 +249,22 @@ func removeInOther(remove, redirectTo string, groups groupMap) groupMap {
 }
 
 func makeCalculusPriority(bytes []byte) []byte {
-	bytes = makeSubGroups(bytes, []string{"*", "/", "^"})
-	bytes = makeSubGroups(bytes, []string{"+", "-"})
+	for _, oper := range binary.OperatorPriority {
+		bytes = makeSubGroups(bytes, oper)
+	}
 	return bytes
 }
 
-func makeSubGroups(bytes []byte, operators []string) []byte {
+func makeSubGroups(bytes []byte, operators []rune) []byte {
 	var count = 0
-	var baseRegex = "(?:-?[0-9.]+|\\(.*\\)) *[%s] (?:-?[0-9.]+|\\(.*\\))"
-	var regexStr = fmt.Sprintf(baseRegex, strings.Join(operators, ""))
+	var baseRegex = "(?:[a-z][a-z0-9]+)?(?:-?[0-9.]+|\\(.*\\)) *[%s] (?:[a-z][a-z0-9]+)?(?:-?[0-9.]+|\\(.*\\))"
+	var regexStr = fmt.Sprintf(baseRegex, string(operators))
 	var regex, _ = regexp.Compile(regexStr)
 
 	var str = string(bytes)
 
 	for _, ope := range operators {
-		count += strings.Count(str, ope)
+		count += strings.Count(str, string(ope))
 	}
 
 	for i := 0; i < count; i++ {
