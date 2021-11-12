@@ -51,8 +51,6 @@ func handleApiCalculate(res http.ResponseWriter, req *http.Request) {
 
 	res.Header().Set("Content-Type", "application/json")
 
-	fmt.Println(req.Method)
-
 	if req.Method == "POST" {
 		res.WriteHeader(200)
 
@@ -62,8 +60,6 @@ func handleApiCalculate(res http.ResponseWriter, req *http.Request) {
 			sendJson(errorRes{Error: err.Error()}, res)
 			return
 		}
-
-		fmt.Println(operation)
 
 		var result = fmt.Sprintf("%f", operation.Eval())
 		sendJson(resultRes{result}, res)
@@ -90,7 +86,6 @@ func readCalculation(reader io.Reader) (operators.Operation, error) {
 		return nil, err
 	}
 
-	fmt.Println(req.Calculation)
 	operation, err = parser.Parse(req.Calculation)
 
 	if err != nil {
