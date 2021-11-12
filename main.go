@@ -18,9 +18,8 @@ func main() {
 	var s24mftt, _ = binary.New('-', s24, ftt)
 
 	var div, _ = binary.New('/', tpftc4, s24mftt)
-
 	fmt.Println(div.Eval())
 
-	parser.Parse("1.12 + 2 + 3 / 2 * 5")
-	parser.Parse("((2 + 5) * cos(4)) / (sin(24) - (4 * 12))")
+	var res, _ = parser.Parse("((2 + 5) * cos(4)) / (sin(24) - (4 * 12))")
+	fmt.Println(res.Eval())
 }
