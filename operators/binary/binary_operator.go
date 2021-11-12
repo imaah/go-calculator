@@ -4,10 +4,11 @@ import (
 	"emorisse.fr/calcul/operators"
 	"emorisse.fr/calcul/utils"
 	"errors"
+	"math"
 )
 
 //KnownSymbols all symbols that can be used for a binary operator
-var KnownSymbols = []rune{'-', '+', '*', '/'}
+var KnownSymbols = []rune{'-', '+', '*', '/', '^'}
 
 type opBinary struct {
 	operators.Operation
@@ -25,6 +26,8 @@ func (b *opBinary) Eval() float64 {
 		return b.Left.Eval() / b.Right.Eval()
 	case '*':
 		return b.Left.Eval() * b.Right.Eval()
+	case '^':
+		return math.Pow(b.Left.Eval(), b.Right.Eval())
 	}
 	return 0
 }

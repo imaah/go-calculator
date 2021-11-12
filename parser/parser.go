@@ -20,7 +20,7 @@ var functionExpressionRegex *regexp.Regexp
 var subGroupRegex *regexp.Regexp
 
 func init() {
-	regexInnerParenthesis = regexp.MustCompile("[+-]?[a-z]*\\(-?[0-9.a-z+\\-*/ :]+\\)")
+	regexInnerParenthesis = regexp.MustCompile("[+-]?[a-z]*\\(-?[0-9.a-z+\\-*/^ :]+\\)")
 	subGroupRegex = regexp.MustCompile("^:[0-9]+$")
 
 	var binaryRegexStr = fmt.Sprintf("^\\(?(:[0-9]+|-?[0-9]+(?:.[0-9]+)?) *([%s]) *(:[0-9]+|-?[0-9]+(?:.[0-9]+)?)\\)?$",
