@@ -13,6 +13,8 @@ import (
 	"strings"
 )
 
+type groupMap map[string]string
+
 var regexInnerParenthesis *regexp.Regexp
 var binaryExpressionRegex *regexp.Regexp
 var unaryExpressionRegex *regexp.Regexp
@@ -20,18 +22,20 @@ var functionExpressionRegex *regexp.Regexp
 var subGroupRegex *regexp.Regexp
 
 func init() {
-	regexInnerParenthesis = regexp.MustCompile("[+-]?[a-z]*\\(-?[0-9.a-z+\\-*/^ :]+\\)")
-	subGroupRegex = regexp.MustCompile("^:[0-9]+$")
+	var innerParenthesisRegexStr = fmt.Sprintf("[+-]?[a-z]*\\(-?[0-9.a-z%s :]+\\)",
+		strings.Replace(string(binary.KnownSymbols), "-", "\\-", 1))
 
 	var binaryRegexStr = fmt.Sprintf("^\\(?(:[0-9]+|-?[0-9]+(?:.[0-9]+)?) *([%s]) *(:[0-9]+|-?[0-9]+(?:.[0-9]+)?)\\)?$",
-		string(binary.KnownSymbols))
+		strings.Replace(string(binary.KnownSymbols), "-", "\\-", 1))
 
 	var unaryRegexStr = fmt.Sprintf("^ *([%s]) *(?:\\(?(:[0-9]+|-?[0-9]+(?:.[0-9]+)?)\\)?)$",
-		string(unary.KnownSymbols))
+		strings.Replace(string(unary.KnownSymbols), "-", "\\-", 1))
 
+	regexInnerParenthesis = regexp.MustCompile(innerParenthesisRegexStr)
 	binaryExpressionRegex = regexp.MustCompile(binaryRegexStr)
 	unaryExpressionRegex = regexp.MustCompile(unaryRegexStr)
 	functionExpressionRegex = regexp.MustCompile("^ *([a-z][a-z0-9]*) *\\((:[0-9]+|-?[0-9]+(?:.[0-9]+)?)\\)$")
+	subGroupRegex = regexp.MustCompile("^:[0-9]+$")
 }
 
 func Parse(str string) (operators.Operation, error) {
@@ -39,7 +43,7 @@ func Parse(str string) (operators.Operation, error) {
 	var byteStr = addParenthesisAround(makeCalculusPriority([]byte(str)))
 	str = string(byteStr)
 
-	var groups = make(map[string]string)
+	var groups = make(groupMap)
 	group = regexInnerParenthesis.Find(byteStr)
 
 	for i := 0; group != nil; {
@@ -57,7 +61,7 @@ func Parse(str string) (operators.Operation, error) {
 	return buildOperator(groups, lastElem)
 }
 
-func buildOperator(groups map[string]string, index int) (operators.Operation, error) {
+func buildOperator(groups groupMap, index int) (operators.Operation, error) {
 	var key = fmt.Sprintf(":%d", index)
 	var elemStr = groups[key]
 	var elem = []byte(elemStr)
@@ -81,7 +85,7 @@ func isFunctionExpression(expression []byte) bool {
 	return functionExpressionRegex.Match(expression)
 }
 
-func getFunctionExpression(expression []byte, groups map[string]string) (operators.Operation, error) {
+func getFunctionExpression(expression []byte, groups groupMap) (operators.Operation, error) {
 	var value operators.Operation
 	var err error
 	var functionName = ""
@@ -108,7 +112,7 @@ func isUnaryExpression(expression []byte) bool {
 	return unaryExpressionRegex.Match(expression)
 }
 
-func getUnaryExpression(expression []byte, groups map[string]string) (operators.Operation, error) {
+func getUnaryExpression(expression []byte, groups groupMap) (operators.Operation, error) {
 	var right operators.Operation
 	var err error
 	var symbol = ' '
@@ -135,7 +139,7 @@ func isBinaryExpression(expression []byte) bool {
 	return binaryExpressionRegex.Match(expression)
 }
 
-func getBinaryExpression(expression []byte, groups map[string]string) (operators.Operation, error) {
+func getBinaryExpression(expression []byte, groups groupMap) (operators.Operation, error) {
 	var left, right operators.Operation
 	var err error
 	var symbol = ' '
@@ -159,7 +163,7 @@ func getBinaryExpression(expression []byte, groups map[string]string) (operators
 	return nil, errors.New("IllegalExpression")
 }
 
-func parseElement(expression []byte, groups map[string]string) (operators.Operation, error) {
+func parseElement(expression []byte, groups groupMap) (operators.Operation, error) {
 	var elem operators.Operation
 	var err error
 
@@ -192,7 +196,7 @@ func isSubGroup(expression []byte) bool {
 	return subGroupRegex.Match(expression)
 }
 
-func getLastIndex(groups map[string]string) int {
+func getLastIndex(groups groupMap) int {
 	var max = 0
 
 	for key := range groups {
@@ -220,7 +224,7 @@ func extractIndex(key string) int {
 	return index
 }
 
-func cleanMap(groups map[string]string) map[string]string {
+func cleanMap(groups groupMap) groupMap {
 	var regex, _ = regexp.Compile("^\\(:\\d+\\)$")
 	for key, val := range groups {
 		if regex.Match([]byte(val)) {
@@ -233,7 +237,7 @@ func cleanMap(groups map[string]string) map[string]string {
 	return groups
 }
 
-func removeInOther(remove, redirectTo string, groups map[string]string) map[string]string {
+func removeInOther(remove, redirectTo string, groups groupMap) groupMap {
 	for key, val := range groups {
 		if strings.Contains(val, remove) {
 			groups[key] = strings.Replace(val, remove, redirectTo, 1)
