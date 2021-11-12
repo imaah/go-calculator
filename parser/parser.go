@@ -20,18 +20,18 @@ var functionExpressionRegex *regexp.Regexp
 var subGroupRegex *regexp.Regexp
 
 func init() {
-	regexInnerParenthesis = regexp.MustCompile("[+-]?[a-z]*\\([0-9.a-z+\\-*/ :]+\\)")
+	regexInnerParenthesis = regexp.MustCompile("[+-]?[a-z]*\\(-?[0-9.a-z+\\-*/ :]+\\)")
 	subGroupRegex = regexp.MustCompile("^:[0-9]+$")
 
-	var binaryRegexStr = fmt.Sprintf("^\\(?(:[0-9]+|[0-9]+(?:.[0-9]+)?) *([%s]) *(:[0-9]+|[0-9]+(?:.[0-9]+)?)\\)?$",
+	var binaryRegexStr = fmt.Sprintf("^\\(?(:[0-9]+|-?[0-9]+(?:.[0-9]+)?) *([%s]) *(:[0-9]+|-?[0-9]+(?:.[0-9]+)?)\\)?$",
 		string(binary.KnownSymbols))
 
-	var unaryRegexStr = fmt.Sprintf("^ *([%s]) *(?:\\(?(:[0-9]+|[0-9]+(?:.[0-9]+)?)\\)?)$",
+	var unaryRegexStr = fmt.Sprintf("^ *([%s]) *(?:\\(?(:[0-9]+|-?[0-9]+(?:.[0-9]+)?)\\)?)$",
 		string(unary.KnownSymbols))
 
 	binaryExpressionRegex = regexp.MustCompile(binaryRegexStr)
 	unaryExpressionRegex = regexp.MustCompile(unaryRegexStr)
-	functionExpressionRegex = regexp.MustCompile("^ *([a-z][a-z0-9]*) *\\((:[0-9]+|[0-9]+(?:.[0-9]+)?)\\)$")
+	functionExpressionRegex = regexp.MustCompile("^ *([a-z][a-z0-9]*) *\\((:[0-9]+|-?[0-9]+(?:.[0-9]+)?)\\)$")
 }
 
 func Parse(str string) (operators.Operation, error) {
@@ -250,7 +250,7 @@ func makeCalculusPriority(bytes []byte) []byte {
 
 func makeSubGroups(bytes []byte, operators []string) []byte {
 	var count = 0
-	var baseRegex = "(?:[0-9.]+|\\(.*\\)) *[%s] (?:[0-9.]+|\\(.*\\))"
+	var baseRegex = "(?:-?[0-9.]+|\\(.*\\)) *[%s] (?:-?[0-9.]+|\\(.*\\))"
 	var regexStr = fmt.Sprintf(baseRegex, strings.Join(operators, ""))
 	var regex, _ = regexp.Compile(regexStr)
 
