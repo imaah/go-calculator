@@ -25,6 +25,10 @@ func (b *opUnary) Eval() *operation.Result {
 	return nil
 }
 
+func (b opUnary) String() string {
+	return string(b.Symbol) + b.Right.String()
+}
+
 func invert(right *operation.Result) *operation.Result {
 	if right.IsNumber() {
 		return operation.NewNumberResult(-right.GetNumber())

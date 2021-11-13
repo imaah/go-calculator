@@ -4,6 +4,7 @@ import (
 	"emorisse.fr/go-calculator/operation"
 	"emorisse.fr/go-calculator/utils"
 	"errors"
+	"fmt"
 	"math"
 )
 
@@ -38,6 +39,10 @@ func (b *opBinary) Eval() *operation.Result {
 		return modulo(b.Left.Eval(), b.Right.Eval())
 	}
 	return nil
+}
+
+func (b opBinary) String() string {
+	return fmt.Sprintf("(%s %c %s)", b.Left.String(), b.Symbol, b.Right.String())
 }
 
 func multiply(left, right *operation.Result) *operation.Result {

@@ -1,6 +1,9 @@
 package number
 
-import "emorisse.fr/go-calculator/operation"
+import (
+	"emorisse.fr/go-calculator/operation"
+	"fmt"
+)
 
 type opNumber struct {
 	operation.Operation
@@ -9,6 +12,10 @@ type opNumber struct {
 
 func (n opNumber) Eval() *operation.Result {
 	return operation.NewNumberResult(n.value)
+}
+
+func (n opNumber) String() string {
+	return fmt.Sprintf("%f", n.value)
 }
 
 //New Creates a new number operator

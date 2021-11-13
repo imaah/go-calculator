@@ -28,6 +28,10 @@ func (f opFunction) Eval() *operation.Result {
 	return operation.NewStringResult(f.FunctionName + "(" + innerRes.GetString() + ")")
 }
 
+func (f opFunction) String() string {
+	return f.FunctionName + "(" + f.Value.String() + ")"
+}
+
 func init() {
 	_ = RegisterFunction("cos", math.Cos)
 	_ = RegisterFunction("sin", math.Sin)

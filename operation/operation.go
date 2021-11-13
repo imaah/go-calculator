@@ -4,6 +4,7 @@ import "fmt"
 
 type Operation interface {
 	Eval() *Result
+	String() string
 }
 
 type ResultType uint8
