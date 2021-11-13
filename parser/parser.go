@@ -27,14 +27,11 @@ func init() {
 	var innerParenthesisRegexStr = fmt.Sprintf("[+-]?(?:[a-z][a-z0-9]+)?\\(-?[0-9.a-z%s :]+\\)",
 		sanitizeOperators(binary.KnownSymbols))
 
-	fmt.Println(innerParenthesisRegexStr)
 	var binaryRegexStr = fmt.Sprintf("^\\(?(:[0-9]+|-?[0-9]+(?:.[0-9]+)?) *([%s]) *(:[0-9]+|-?[0-9]+(?:.[0-9]+)?)\\)?$",
 		sanitizeOperators(binary.KnownSymbols))
 
 	var unaryRegexStr = fmt.Sprintf("([%s])(?:(:[0-9]+|-?[0-9]+(?:.[0-9]+)?))",
 		sanitizeOperators(unary.KnownSymbols))
-
-	fmt.Println(unaryRegexStr)
 
 	regexInnerParenthesis = regexp.MustCompile(innerParenthesisRegexStr)
 	binaryExpressionRegex = regexp.MustCompile(binaryRegexStr)
@@ -48,7 +45,6 @@ func init() {
 func Parse(str string) (operation.Operation, error) {
 	var groups = make(groupMap)
 	var lastIndex = 1
-	fmt.Println(str)
 
 	str, lastIndex, groups = processFunctions(str, lastIndex, groups)
 	str, lastIndex, groups = processParenthesis(str, lastIndex, groups)
@@ -64,11 +60,9 @@ func Parse(str string) (operation.Operation, error) {
 	str, lastIndex, groups = processUnary(str, lastIndex, groups)
 
 	var key = fmt.Sprintf(":%d", lastIndex)
-
 	groups[key] = str
 
 	groups = cleanMap(groups)
-	fmt.Println(groups)
 	return buildOperator(groups, lastIndex)
 }
 
