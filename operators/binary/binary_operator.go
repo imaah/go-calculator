@@ -4,6 +4,7 @@ import (
 	"emorisse.fr/calcul/operators"
 	"emorisse.fr/calcul/utils"
 	"errors"
+	"math"
 )
 
 //KnownSymbols all symbols that can be used for a binary operator
@@ -31,10 +32,10 @@ func (b *opBinary) Eval() *operators.OperationResult {
 		return divide(b.Left.Eval(), b.Right.Eval())
 	case '*':
 		return multiply(b.Left.Eval(), b.Right.Eval())
-		//case '^':
-		//	return math.Pow(b.Left.Eval(), b.Right.Eval())
-		//case '%':
-		//	return math.Mod(b.Left.Eval(), b.Right.Eval())
+	case '^':
+		return pow(b.Left.Eval(), b.Right.Eval())
+	case '%':
+		return modulo(b.Left.Eval(), b.Right.Eval())
 	}
 	return nil
 }
@@ -73,6 +74,24 @@ func subtract(left, right *operators.OperationResult) *operators.OperationResult
 	}
 
 	return operators.NewStringResult(left.GetString() + " - " + right.GetString())
+}
+
+func pow(left, right *operators.OperationResult) *operators.OperationResult {
+	if left.IsNumber() && right.IsNumber() {
+		var result = math.Pow(left.GetNumber(), right.GetNumber())
+		return operators.NewNumberResult(result)
+	}
+
+	return operators.NewStringResult(left.GetString() + " ^ " + right.GetString())
+}
+
+func modulo(left, right *operators.OperationResult) *operators.OperationResult {
+	if left.IsNumber() && right.IsNumber() {
+		var result = math.Mod(left.GetNumber(), right.GetNumber())
+		return operators.NewNumberResult(result)
+	}
+
+	return operators.NewStringResult(left.GetString() + " % " + right.GetString())
 }
 
 //New Creates a new binary operator

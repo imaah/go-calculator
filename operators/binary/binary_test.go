@@ -29,6 +29,8 @@ func TestOpBinary_Eval(t *testing.T) {
 	test('-', 10, 4, 6, t)
 	test('*', 10, 4, 40, t)
 	test('/', 10, 4, 2.5, t)
+	test('^', 3, 2, 9, t)
+	test('%', 10, 3, 1, t)
 }
 
 func test(symbol rune, val1, val2, expected float64, t *testing.T) {
