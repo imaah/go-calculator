@@ -36,7 +36,7 @@ func init() {
 	binaryExpressionRegex = regexp.MustCompile(binaryRegexStr)
 	unaryExpressionRegex = regexp.MustCompile(unaryRegexStr)
 	functionExpressionRegex = regexp.MustCompile("^ *([a-z][a-z0-9]*) *\\((:[0-9]+|-?[0-9]+(?:.[0-9]+)?)\\)$")
-	findFunctionExpressionsRegex = regexp.MustCompile(" *([a-z][a-z0-9]*) *\\((:[0-9]+|-?[0-9]+(?:.[0-9]+)?)\\)")
+	findFunctionExpressionsRegex = regexp.MustCompile(" *([a-z][a-z0-9]*) *\\(-?[0-9]+(?:.[0-9]+)?\\)")
 	subGroupRegex = regexp.MustCompile("^:[0-9]+$")
 }
 
@@ -229,7 +229,7 @@ func extractIndex(key string) int {
 }
 
 func cleanMap(groups groupMap) groupMap {
-	var regex, _ = regexp.Compile("^\\(:\\d+\\)$")
+	var regex, _ = regexp.Compile("^\\( *:\\d+ *\\)$")
 	for key, val := range groups {
 		if regex.Match([]byte(val)) {
 			delete(groups, key)
@@ -287,5 +287,5 @@ func addParenthesisAroundFunctions(expression []byte) []byte {
 }
 
 func addParenthesisAround(group []byte) []byte {
-	return []byte("(" + string(group) + ")")
+	return []byte("(" + strings.Trim(string(group), " ") + ")")
 }
