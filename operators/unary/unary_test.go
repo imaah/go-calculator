@@ -36,7 +36,7 @@ func test(symbol rune, value, expected float64, t *testing.T) {
 		t.Fail()
 	}
 
-	if una.Eval() != expected {
-		t.Logf("Should be %f but got %f", expected, una.Eval())
+	if una.Eval().GetNumber() != expected {
+		t.Logf("Should be %f but got %f", expected, una.Eval().GetNumber())
 	}
 }

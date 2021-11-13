@@ -74,7 +74,7 @@ func double(val float64) float64 {
 func testFunc(function OpFunc, val, expected float64, t *testing.T) {
 	var bin = NewUsingTempFunc(function, number.New(val))
 
-	if bin.Eval() != expected {
+	if bin.Eval().GetNumber() != expected {
 		t.Logf("Should be %f but got %f", expected, bin.Eval())
 	}
 }
@@ -87,7 +87,7 @@ func test(function string, val, expected float64, t *testing.T) {
 		t.Fail()
 	}
 
-	if bin.Eval() != expected {
+	if bin.Eval().GetNumber() != expected {
 		t.Logf("Should be %f but got %f", expected, bin.Eval())
 	}
 }

@@ -61,7 +61,7 @@ func handleApiCalculate(res http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		var result = fmt.Sprintf("%f", operation.Eval())
+		var result = fmt.Sprintf("%s", operation.Eval().GetString())
 		sendJson(resultRes{result}, res)
 
 	} else {

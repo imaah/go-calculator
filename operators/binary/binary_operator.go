@@ -4,14 +4,14 @@ import (
 	"emorisse.fr/calcul/operators"
 	"emorisse.fr/calcul/utils"
 	"errors"
-	"math"
 )
 
 //KnownSymbols all symbols that can be used for a binary operator
 var KnownSymbols = []rune{'-', '+', '*', '/', '^', '%'}
 
 var OperatorPriority = [][]rune{
-	{'*', '/', '^', '%'},
+	{'^'},
+	{'*', '/', '%'},
 	{'-', '+'},
 }
 
@@ -21,22 +21,58 @@ type opBinary struct {
 	Symbol      rune
 }
 
-func (b *opBinary) Eval() float64 {
+func (b *opBinary) Eval() *operators.OperationResult {
 	switch b.Symbol {
 	case '+':
-		return b.Left.Eval() + b.Right.Eval()
+		return add(b.Left.Eval(), b.Right.Eval())
 	case '-':
-		return b.Left.Eval() - b.Right.Eval()
+		return subtract(b.Left.Eval(), b.Right.Eval())
 	case '/':
-		return b.Left.Eval() / b.Right.Eval()
+		return divide(b.Left.Eval(), b.Right.Eval())
 	case '*':
-		return b.Left.Eval() * b.Right.Eval()
-	case '^':
-		return math.Pow(b.Left.Eval(), b.Right.Eval())
-	case '%':
-		return math.Mod(b.Left.Eval(), b.Right.Eval())
+		return multiply(b.Left.Eval(), b.Right.Eval())
+		//case '^':
+		//	return math.Pow(b.Left.Eval(), b.Right.Eval())
+		//case '%':
+		//	return math.Mod(b.Left.Eval(), b.Right.Eval())
 	}
-	return 0
+	return nil
+}
+
+func multiply(left, right *operators.OperationResult) *operators.OperationResult {
+	if left.IsNumber() && right.IsNumber() {
+		var result = left.GetNumber() * right.GetNumber()
+		return operators.NewNumberResult(result)
+	}
+
+	return operators.NewStringResult(left.GetString() + " * " + right.GetString())
+}
+
+func divide(left, right *operators.OperationResult) *operators.OperationResult {
+	if left.IsNumber() && right.IsNumber() {
+		var result = left.GetNumber() / right.GetNumber()
+		return operators.NewNumberResult(result)
+	}
+
+	return operators.NewStringResult(left.GetString() + " / " + right.GetString())
+}
+
+func add(left, right *operators.OperationResult) *operators.OperationResult {
+	if left.IsNumber() && right.IsNumber() {
+		var result = left.GetNumber() + right.GetNumber()
+		return operators.NewNumberResult(result)
+	}
+
+	return operators.NewStringResult(left.GetString() + " + " + right.GetString())
+}
+
+func subtract(left, right *operators.OperationResult) *operators.OperationResult {
+	if left.IsNumber() && right.IsNumber() {
+		var result = left.GetNumber() - right.GetNumber()
+		return operators.NewNumberResult(result)
+	}
+
+	return operators.NewStringResult(left.GetString() + " - " + right.GetString())
 }
 
 //New Creates a new binary operator

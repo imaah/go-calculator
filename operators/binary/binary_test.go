@@ -39,7 +39,7 @@ func test(symbol rune, val1, val2, expected float64, t *testing.T) {
 		t.Fail()
 	}
 
-	if bin.Eval() != expected {
-		t.Logf("Should be %f but got %f", expected, bin.Eval())
+	if bin.Eval().GetNumber() != expected {
+		t.Logf("Should be %f but got %f", expected, bin.Eval().GetNumber())
 	}
 }

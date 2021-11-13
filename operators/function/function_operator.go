@@ -17,8 +17,15 @@ type opFunction struct {
 	Value        operators.Operation
 }
 
-func (f opFunction) Eval() float64 {
-	return f.Function(f.Value.Eval())
+func (f opFunction) Eval() *operators.OperationResult {
+	var innerRes = f.Value.Eval()
+
+	if innerRes.IsNumber() {
+		var res = f.Function(innerRes.GetNumber())
+		return operators.NewNumberResult(res)
+	}
+
+	return operators.NewStringResult(f.FunctionName + "(" + innerRes.GetString() + ")")
 }
 
 func init() {

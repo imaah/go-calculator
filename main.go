@@ -14,9 +14,9 @@ func main() {
 	//var s24mftt, _ = binary.New('-', s24, ftt)
 	//
 	//var div, _ = binary.New('/', tpftc4, s24mftt)
-	//fmt.Println(div.Eval())
+	//fmt.Println(div.Eval().GetString())
 	//
 	//var res, _ = parser.Parse("((2 + 5) * cos(4)) / (sin(24) - (4 * 12))")
-	//fmt.Println(res.Eval())
+	//fmt.Println(res.Eval().GetString())
 	web.StartServer()
 }

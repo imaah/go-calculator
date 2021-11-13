@@ -15,14 +15,22 @@ type opUnary struct {
 	Symbol rune
 }
 
-func (b *opUnary) Eval() float64 {
+func (b *opUnary) Eval() *operators.OperationResult {
 	switch b.Symbol {
 	case '+':
 		return b.Right.Eval()
 	case '-':
-		return -b.Right.Eval()
+		return invert(b.Right.Eval())
 	}
-	return 0
+	return nil
+}
+
+func invert(right *operators.OperationResult) *operators.OperationResult {
+	if right.IsNumber() {
+		return operators.NewNumberResult(-right.GetNumber())
+	}
+
+	return operators.NewStringResult("-" + right.GetString())
 }
 
 //New Creates a new unary operator
