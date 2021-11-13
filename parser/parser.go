@@ -265,8 +265,8 @@ func makeCalculusPriority(expression []byte) []byte {
 
 func makeSubGroups(expression []byte, operators []rune) []byte {
 	var count = 0
-	var baseRegex = "(?:[a-z][a-z0-9]+)?(?:-?[0-9.]+|\\(.*\\)) *[%s] (?:[a-z][a-z0-9]+)?(?:-?[0-9.]+|\\(.*\\))"
-	var regexStr = fmt.Sprintf(baseRegex, string(operators))
+	var baseRegex = "(?:[a-z][a-z0-9]+)?(?:-?[0-9.]+|\\(.*\\)) *[%s] *(?:[a-z][a-z0-9]+)?(?:-?[0-9.]+|\\(.*\\))"
+	var regexStr = fmt.Sprintf(baseRegex, sanitizeOperators(operators))
 	var regex, _ = regexp.Compile(regexStr)
 
 	var str = string(expression)
@@ -280,6 +280,17 @@ func makeSubGroups(expression []byte, operators []rune) []byte {
 	}
 
 	return expression
+}
+
+func sanitizeOperators(operators []rune) string {
+	var strBuilder strings.Builder
+
+	for _, ope := range operators {
+		strBuilder.WriteString("\\")
+		strBuilder.WriteRune(ope)
+	}
+
+	return strBuilder.String()
 }
 
 func addParenthesisAroundFunctions(expression []byte) []byte {
