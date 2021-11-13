@@ -1,9 +1,9 @@
-package operators
+package operation
 
 import "fmt"
 
 type Operation interface {
-	Eval() *OperationResult
+	Eval() *Result
 }
 
 type ResultType uint8
@@ -11,46 +11,46 @@ type ResultType uint8
 var OpResultNumber ResultType = 0
 var OpResultString ResultType = 1
 
-type OperationResult struct {
+type Result struct {
 	resType  ResultType
 	numValue float64
 	strValue string
 }
 
-func (r OperationResult) IsNumber() bool {
+func (r Result) IsNumber() bool {
 	if r.resType == OpResultNumber {
 		return true
 	}
 	return false
 }
 
-func (r OperationResult) IsString() bool {
+func (r Result) IsString() bool {
 	if r.resType == OpResultString {
 		return true
 	}
 	return false
 }
 
-func (r OperationResult) GetNumber() float64 {
+func (r Result) GetNumber() float64 {
 	return r.numValue
 }
 
-func (r OperationResult) GetString() string {
+func (r Result) GetString() string {
 	if r.IsNumber() {
 		return fmt.Sprintf("%f", r.GetNumber())
 	}
 	return r.strValue
 }
 
-func NewStringResult(value string) *OperationResult {
-	return &OperationResult{
+func NewStringResult(value string) *Result {
+	return &Result{
 		resType:  OpResultString,
 		strValue: value,
 	}
 }
 
-func NewNumberResult(value float64) *OperationResult {
-	return &OperationResult{
+func NewNumberResult(value float64) *Result {
+	return &Result{
 		resType:  OpResultNumber,
 		numValue: value,
 	}

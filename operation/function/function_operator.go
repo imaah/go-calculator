@@ -1,7 +1,7 @@
 package function
 
 import (
-	"emorisse.fr/calcul/operators"
+	"emorisse.fr/go-calculator/operation"
 	"errors"
 	"math"
 )
@@ -11,21 +11,21 @@ type OpFunc func(float64) float64
 var functions = make(map[string]OpFunc)
 
 type opFunction struct {
-	operators.Operation
+	operation.Operation
 	FunctionName string
 	Function     OpFunc
-	Value        operators.Operation
+	Value        operation.Operation
 }
 
-func (f opFunction) Eval() *operators.OperationResult {
+func (f opFunction) Eval() *operation.Result {
 	var innerRes = f.Value.Eval()
 
 	if innerRes.IsNumber() {
 		var res = f.Function(innerRes.GetNumber())
-		return operators.NewNumberResult(res)
+		return operation.NewNumberResult(res)
 	}
 
-	return operators.NewStringResult(f.FunctionName + "(" + innerRes.GetString() + ")")
+	return operation.NewStringResult(f.FunctionName + "(" + innerRes.GetString() + ")")
 }
 
 func init() {
@@ -44,7 +44,7 @@ func init() {
 }
 
 //New Creates a new function operator
-func New(functionName string, value operators.Operation) (operators.Operation, error) {
+func New(functionName string, value operation.Operation) (operation.Operation, error) {
 	if value == nil {
 		return nil, errors.New("ArgumentIsNil")
 	}
@@ -58,7 +58,7 @@ func New(functionName string, value operators.Operation) (operators.Operation, e
 	return nil, errors.New("InvalidFunctionName")
 }
 
-func NewUsingTempFunc(function OpFunc, value operators.Operation) operators.Operation {
+func NewUsingTempFunc(function OpFunc, value operation.Operation) operation.Operation {
 	return &opFunction{
 		FunctionName: "temp",
 		Function:     function,

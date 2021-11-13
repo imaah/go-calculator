@@ -1,3 +1,3 @@
-module emorisse.fr/calcul
+module emorisse.fr/go-calculator
 
 go 1.17

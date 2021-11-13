@@ -1,7 +1,7 @@
 package main
 
 import (
-	"emorisse.fr/calcul/web"
+	"emorisse.fr/go-calculator/web"
 )
 
 func main() {

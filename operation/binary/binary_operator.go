@@ -1,8 +1,8 @@
 package binary
 
 import (
-	"emorisse.fr/calcul/operators"
-	"emorisse.fr/calcul/utils"
+	"emorisse.fr/go-calculator/operation"
+	"emorisse.fr/go-calculator/utils"
 	"errors"
 	"math"
 )
@@ -17,12 +17,12 @@ var OperatorPriority = [][]rune{
 }
 
 type opBinary struct {
-	operators.Operation
-	Left, Right operators.Operation
+	operation.Operation
+	Left, Right operation.Operation
 	Symbol      rune
 }
 
-func (b *opBinary) Eval() *operators.OperationResult {
+func (b *opBinary) Eval() *operation.Result {
 	switch b.Symbol {
 	case '+':
 		return add(b.Left.Eval(), b.Right.Eval())
@@ -40,62 +40,62 @@ func (b *opBinary) Eval() *operators.OperationResult {
 	return nil
 }
 
-func multiply(left, right *operators.OperationResult) *operators.OperationResult {
+func multiply(left, right *operation.Result) *operation.Result {
 	if left.IsNumber() && right.IsNumber() {
 		var result = left.GetNumber() * right.GetNumber()
-		return operators.NewNumberResult(result)
+		return operation.NewNumberResult(result)
 	}
 
-	return operators.NewStringResult(left.GetString() + " * " + right.GetString())
+	return operation.NewStringResult(left.GetString() + " * " + right.GetString())
 }
 
-func divide(left, right *operators.OperationResult) *operators.OperationResult {
+func divide(left, right *operation.Result) *operation.Result {
 	if left.IsNumber() && right.IsNumber() {
 		var result = left.GetNumber() / right.GetNumber()
-		return operators.NewNumberResult(result)
+		return operation.NewNumberResult(result)
 	}
 
-	return operators.NewStringResult(left.GetString() + " / " + right.GetString())
+	return operation.NewStringResult(left.GetString() + " / " + right.GetString())
 }
 
-func add(left, right *operators.OperationResult) *operators.OperationResult {
+func add(left, right *operation.Result) *operation.Result {
 	if left.IsNumber() && right.IsNumber() {
 		var result = left.GetNumber() + right.GetNumber()
-		return operators.NewNumberResult(result)
+		return operation.NewNumberResult(result)
 	}
 
-	return operators.NewStringResult(left.GetString() + " + " + right.GetString())
+	return operation.NewStringResult(left.GetString() + " + " + right.GetString())
 }
 
-func subtract(left, right *operators.OperationResult) *operators.OperationResult {
+func subtract(left, right *operation.Result) *operation.Result {
 	if left.IsNumber() && right.IsNumber() {
 		var result = left.GetNumber() - right.GetNumber()
-		return operators.NewNumberResult(result)
+		return operation.NewNumberResult(result)
 	}
 
-	return operators.NewStringResult(left.GetString() + " - " + right.GetString())
+	return operation.NewStringResult(left.GetString() + " - " + right.GetString())
 }
 
-func pow(left, right *operators.OperationResult) *operators.OperationResult {
+func pow(left, right *operation.Result) *operation.Result {
 	if left.IsNumber() && right.IsNumber() {
 		var result = math.Pow(left.GetNumber(), right.GetNumber())
-		return operators.NewNumberResult(result)
+		return operation.NewNumberResult(result)
 	}
 
-	return operators.NewStringResult(left.GetString() + " ^ " + right.GetString())
+	return operation.NewStringResult(left.GetString() + " ^ " + right.GetString())
 }
 
-func modulo(left, right *operators.OperationResult) *operators.OperationResult {
+func modulo(left, right *operation.Result) *operation.Result {
 	if left.IsNumber() && right.IsNumber() {
 		var result = math.Mod(left.GetNumber(), right.GetNumber())
-		return operators.NewNumberResult(result)
+		return operation.NewNumberResult(result)
 	}
 
-	return operators.NewStringResult(left.GetString() + " % " + right.GetString())
+	return operation.NewStringResult(left.GetString() + " % " + right.GetString())
 }
 
 //New Creates a new binary operator
-func New(symbol rune, left, right operators.Operation) (operators.Operation, error) {
+func New(symbol rune, left, right operation.Operation) (operation.Operation, error) {
 	if left == nil || right == nil {
 		return nil, errors.New("ArgumentIsNil")
 	}

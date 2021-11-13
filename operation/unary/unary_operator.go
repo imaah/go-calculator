@@ -1,8 +1,8 @@
 package unary
 
 import (
-	"emorisse.fr/calcul/operators"
-	"emorisse.fr/calcul/utils"
+	"emorisse.fr/go-calculator/operation"
+	"emorisse.fr/go-calculator/utils"
 	"errors"
 )
 
@@ -10,12 +10,12 @@ import (
 var KnownSymbols = []rune{'-', '+'}
 
 type opUnary struct {
-	operators.Operation
-	Right  operators.Operation
+	operation.Operation
+	Right  operation.Operation
 	Symbol rune
 }
 
-func (b *opUnary) Eval() *operators.OperationResult {
+func (b *opUnary) Eval() *operation.Result {
 	switch b.Symbol {
 	case '+':
 		return b.Right.Eval()
@@ -25,16 +25,16 @@ func (b *opUnary) Eval() *operators.OperationResult {
 	return nil
 }
 
-func invert(right *operators.OperationResult) *operators.OperationResult {
+func invert(right *operation.Result) *operation.Result {
 	if right.IsNumber() {
-		return operators.NewNumberResult(-right.GetNumber())
+		return operation.NewNumberResult(-right.GetNumber())
 	}
 
-	return operators.NewStringResult("-" + right.GetString())
+	return operation.NewStringResult("-" + right.GetString())
 }
 
 //New Creates a new unary operator
-func New(symbol rune, right operators.Operation) (operators.Operation, error) {
+func New(symbol rune, right operation.Operation) (operation.Operation, error) {
 	if right == nil {
 		return nil, errors.New("ArgumentIsNil")
 	}

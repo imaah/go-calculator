@@ -1,8 +1,8 @@
 package web
 
 import (
-	"emorisse.fr/calcul/operators"
-	"emorisse.fr/calcul/parser"
+	"emorisse.fr/go-calculator/operation"
+	"emorisse.fr/go-calculator/parser"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -54,14 +54,14 @@ func handleApiCalculate(res http.ResponseWriter, req *http.Request) {
 	if req.Method == "POST" {
 		res.WriteHeader(200)
 
-		var operation, err = readCalculation(req.Body)
+		var ope, err = readCalculation(req.Body)
 
 		if err != nil {
 			sendJson(errorRes{Error: err.Error()}, res)
 			return
 		}
 
-		var result = fmt.Sprintf("%s", operation.Eval().GetString())
+		var result = fmt.Sprintf("%s", ope.Eval().GetString())
 		sendJson(resultRes{result}, res)
 
 	} else {
@@ -70,9 +70,9 @@ func handleApiCalculate(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func readCalculation(reader io.Reader) (operators.Operation, error) {
+func readCalculation(reader io.Reader) (operation.Operation, error) {
 	var content, err = ioutil.ReadAll(reader)
-	var operation operators.Operation
+	var ope operation.Operation
 
 	if err != nil {
 		return nil, err
@@ -86,13 +86,13 @@ func readCalculation(reader io.Reader) (operators.Operation, error) {
 		return nil, err
 	}
 
-	operation, err = parser.Parse(req.Calculation)
+	ope, err = parser.Parse(req.Calculation)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return operation, nil
+	return ope, nil
 }
 
 func sendJson(elem interface{}, res http.ResponseWriter) {

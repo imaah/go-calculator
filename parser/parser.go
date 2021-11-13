@@ -1,11 +1,11 @@
 package parser
 
 import (
-	"emorisse.fr/calcul/operators"
-	"emorisse.fr/calcul/operators/binary"
-	"emorisse.fr/calcul/operators/function"
-	"emorisse.fr/calcul/operators/number"
-	"emorisse.fr/calcul/operators/unary"
+	"emorisse.fr/go-calculator/operation"
+	"emorisse.fr/go-calculator/operation/binary"
+	"emorisse.fr/go-calculator/operation/function"
+	"emorisse.fr/go-calculator/operation/number"
+	"emorisse.fr/go-calculator/operation/unary"
 	"errors"
 	"fmt"
 	"regexp"
@@ -40,7 +40,7 @@ func init() {
 	subGroupRegex = regexp.MustCompile("^:[0-9]+$")
 }
 
-func Parse(str string) (operators.Operation, error) {
+func Parse(str string) (operation.Operation, error) {
 	var group []byte
 	var byteStr = adaptExpression([]byte(str))
 	str = string(byteStr)
@@ -65,7 +65,7 @@ func Parse(str string) (operators.Operation, error) {
 	return buildOperator(groups, lastElem)
 }
 
-func buildOperator(groups groupMap, index int) (operators.Operation, error) {
+func buildOperator(groups groupMap, index int) (operation.Operation, error) {
 	var key = fmt.Sprintf(":%d", index)
 	var elemStr = groups[key]
 	var elem = []byte(elemStr)
@@ -89,8 +89,8 @@ func isFunctionExpression(expression []byte) bool {
 	return functionExpressionRegex.Match(expression)
 }
 
-func getFunctionExpression(expression []byte, groups groupMap) (operators.Operation, error) {
-	var value operators.Operation
+func getFunctionExpression(expression []byte, groups groupMap) (operation.Operation, error) {
+	var value operation.Operation
 	var err error
 	var functionName = ""
 
@@ -116,8 +116,8 @@ func isUnaryExpression(expression []byte) bool {
 	return unaryExpressionRegex.Match(expression)
 }
 
-func getUnaryExpression(expression []byte, groups groupMap) (operators.Operation, error) {
-	var right operators.Operation
+func getUnaryExpression(expression []byte, groups groupMap) (operation.Operation, error) {
+	var right operation.Operation
 	var err error
 	var symbol = ' '
 
@@ -143,8 +143,8 @@ func isBinaryExpression(expression []byte) bool {
 	return binaryExpressionRegex.Match(expression)
 }
 
-func getBinaryExpression(expression []byte, groups groupMap) (operators.Operation, error) {
-	var left, right operators.Operation
+func getBinaryExpression(expression []byte, groups groupMap) (operation.Operation, error) {
+	var left, right operation.Operation
 	var err error
 	var symbol = ' '
 
@@ -167,8 +167,8 @@ func getBinaryExpression(expression []byte, groups groupMap) (operators.Operatio
 	return nil, errors.New("IllegalExpression")
 }
 
-func parseElement(expression []byte, groups groupMap) (operators.Operation, error) {
-	var elem operators.Operation
+func parseElement(expression []byte, groups groupMap) (operation.Operation, error) {
+	var elem operation.Operation
 	var err error
 
 	if isSubGroup(expression) {
