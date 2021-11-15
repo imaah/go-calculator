@@ -52,7 +52,7 @@ func TestParse__result(t *testing.T) {
 		var calc, _ = Parse(sample)
 
 		if calc.Eval().GetNumber() != result {
-			t.Logf("Got %f but expected %f", calc.Eval().GetNumber(), result)
+			t.Logf("Got %s but expected %f", calc.Eval().GetString(), result)
 			t.Fail()
 		}
 	}

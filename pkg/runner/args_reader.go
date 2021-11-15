@@ -29,7 +29,7 @@ func (a Arguments) GetOrDefault(key, defaultValue string) string {
 func Run(args []string) {
 	var arguments = ReadArguments(args)
 
-	fmt.Println(arguments)
+	//TODO: Add a help description
 
 	if usingWeb, contains := arguments["web-server"]; contains && usingWeb == "true" {
 		var port = arguments.GetOrDefault("port", "8080")

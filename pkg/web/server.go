@@ -18,18 +18,6 @@ func init() {
 	logger = log.New(os.Stdout, "HTTP ", log.Flags())
 }
 
-type errorRes struct {
-	Error string `json:"error"`
-}
-
-type resultRes struct {
-	Result string `json:"result"`
-}
-
-type calculationReq struct {
-	Calculation string `json:"computation"`
-}
-
 func StartServer(address, port string) {
 	var staticFolder = http.FileServer(http.Dir("./static"))
 
@@ -46,8 +34,6 @@ func StartServer(address, port string) {
 }
 
 func handleApiCalculate(res http.ResponseWriter, req *http.Request) {
-	defer logger.Printf("%s %s\n", req.RemoteAddr, req.URL.Path)
-
 	// TODO : add more security, and input checking
 
 	res.Header().Set("Content-Type", "application/json")
@@ -59,16 +45,17 @@ func handleApiCalculate(res http.ResponseWriter, req *http.Request) {
 
 		if err != nil {
 			sendJson(errorRes{Error: err.Error()}, res)
-			return
 		}
 
 		var result = fmt.Sprintf("%s", ope.Eval().GetString())
 		sendJson(resultRes{result}, res)
 
-	} else {
-		res.WriteHeader(400)
-		sendJson(errorRes{"Bad Request"}, res)
+		return
 	}
+
+	res.WriteHeader(400)
+	sendJson(errorRes{"Bad Request"}, res)
+
 }
 
 func readCalculation(reader io.Reader) (operation.Operation, error) {
@@ -97,6 +84,10 @@ func readCalculation(reader io.Reader) (operation.Operation, error) {
 }
 
 func sendJson(elem interface{}, res http.ResponseWriter) {
-	jsonElem, _ := json.Marshal(elem)
-	_, _ = res.Write(jsonElem)
+	var jsonElem, _ = json.Marshal(elem)
+	var _, err = res.Write(jsonElem)
+
+	if err != nil {
+		fmt.Printf("Failed to send data to client : %s\n", err)
+	}
 }
