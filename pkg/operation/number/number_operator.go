@@ -5,22 +5,22 @@ import (
 	"fmt"
 )
 
-type opNumber struct {
+type OpNumber struct {
 	operation.Operation
 	value float64
 }
 
-func (n opNumber) Eval() *operation.Result {
+func (n OpNumber) Eval() *operation.Result {
 	return operation.NewNumberResult(n.value)
 }
 
-func (n opNumber) String() string {
+func (n OpNumber) String() string {
 	return fmt.Sprintf("%f", n.value)
 }
 
 //New Creates a new number operator
 func New(value float64) operation.Operation {
-	return opNumber{
+	return OpNumber{
 		value: value,
 	}
 }

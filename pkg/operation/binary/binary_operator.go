@@ -17,13 +17,13 @@ var OperatorPriority = [][]rune{
 	{'-', '+'},
 }
 
-type opBinary struct {
+type OpBinary struct {
 	operation.Operation
 	Left, Right operation.Operation
 	Symbol      rune
 }
 
-func (b *opBinary) Eval() *operation.Result {
+func (b *OpBinary) Eval() *operation.Result {
 	switch b.Symbol {
 	case '+':
 		return b.add(b.Right.Eval())
@@ -41,11 +41,11 @@ func (b *opBinary) Eval() *operation.Result {
 	return nil
 }
 
-func (b opBinary) String() string {
+func (b OpBinary) String() string {
 	return fmt.Sprintf("(%s %c %s)", b.Left.String(), b.Symbol, b.Right.String())
 }
 
-func (b *opBinary) multiply(right *operation.Result) *operation.Result {
+func (b *OpBinary) multiply(right *operation.Result) *operation.Result {
 	var left = b.Left.Eval()
 
 	if left.IsNumber() && right.IsNumber() {
@@ -56,7 +56,7 @@ func (b *opBinary) multiply(right *operation.Result) *operation.Result {
 	return operation.NewStringResult(left.GetString() + " * " + right.GetString())
 }
 
-func (b *opBinary) divide(right *operation.Result) *operation.Result {
+func (b *OpBinary) divide(right *operation.Result) *operation.Result {
 	var left = b.Left.Eval()
 
 	if left.IsNumber() && right.IsNumber() {
@@ -67,7 +67,7 @@ func (b *opBinary) divide(right *operation.Result) *operation.Result {
 	return operation.NewStringResult(left.GetString() + " / " + right.GetString())
 }
 
-func (b *opBinary) add(right *operation.Result) *operation.Result {
+func (b *OpBinary) add(right *operation.Result) *operation.Result {
 	var left = b.Left.Eval()
 
 	if left.IsNumber() && right.IsNumber() {
@@ -78,7 +78,7 @@ func (b *opBinary) add(right *operation.Result) *operation.Result {
 	return operation.NewStringResult(left.GetString() + " + " + right.GetString())
 }
 
-func (b *opBinary) subtract(right *operation.Result) *operation.Result {
+func (b *OpBinary) subtract(right *operation.Result) *operation.Result {
 	var left = b.Left.Eval()
 
 	if left.IsNumber() && right.IsNumber() {
@@ -89,7 +89,7 @@ func (b *opBinary) subtract(right *operation.Result) *operation.Result {
 	return operation.NewStringResult(left.GetString() + " - " + right.GetString())
 }
 
-func (b *opBinary) pow(right *operation.Result) *operation.Result {
+func (b *OpBinary) pow(right *operation.Result) *operation.Result {
 	var left = b.Left.Eval()
 
 	if left.IsNumber() && right.IsNumber() {
@@ -100,7 +100,7 @@ func (b *opBinary) pow(right *operation.Result) *operation.Result {
 	return operation.NewStringResult(left.GetString() + " ^ " + right.GetString())
 }
 
-func (b *opBinary) modulo(right *operation.Result) *operation.Result {
+func (b *OpBinary) modulo(right *operation.Result) *operation.Result {
 	var left = b.Left.Eval()
 
 	if left.IsNumber() && right.IsNumber() {
@@ -118,7 +118,7 @@ func New(symbol rune, left, right operation.Operation) (operation.Operation, err
 	}
 
 	if utils.RuneArrayContains(KnownSymbols, symbol) {
-		operator := opBinary{
+		operator := OpBinary{
 			Right:  right,
 			Left:   left,
 			Symbol: symbol,

@@ -9,13 +9,13 @@ import (
 //KnownSymbols all symbols that can be used for a binary operator
 var KnownSymbols = []rune{'-', '+'}
 
-type opUnary struct {
+type OpUnary struct {
 	operation.Operation
 	Right  operation.Operation
 	Symbol rune
 }
 
-func (b *opUnary) Eval() *operation.Result {
+func (b *OpUnary) Eval() *operation.Result {
 	switch b.Symbol {
 	case '+':
 		return b.Right.Eval()
@@ -25,7 +25,7 @@ func (b *opUnary) Eval() *operation.Result {
 	return nil
 }
 
-func (b opUnary) String() string {
+func (b OpUnary) String() string {
 	return string(b.Symbol) + b.Right.String()
 }
 
@@ -44,7 +44,7 @@ func New(symbol rune, right operation.Operation) (operation.Operation, error) {
 	}
 
 	if utils.RuneArrayContains(KnownSymbols, symbol) {
-		operator := opUnary{
+		operator := OpUnary{
 			Right:  right,
 			Symbol: symbol,
 		}

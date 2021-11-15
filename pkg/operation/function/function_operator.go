@@ -6,32 +6,6 @@ import (
 	"math"
 )
 
-type OpFunc func(float64) float64
-
-var functions = make(map[string]OpFunc)
-
-type opFunction struct {
-	operation.Operation
-	FunctionName string
-	Function     OpFunc
-	Value        operation.Operation
-}
-
-func (f opFunction) Eval() *operation.Result {
-	var innerRes = f.Value.Eval()
-
-	if innerRes.IsNumber() {
-		var res = f.Function(innerRes.GetNumber())
-		return operation.NewNumberResult(res)
-	}
-
-	return operation.NewStringResult(f.FunctionName + "(" + innerRes.GetString() + ")")
-}
-
-func (f opFunction) String() string {
-	return f.FunctionName + "(" + f.Value.String() + ")"
-}
-
 func init() {
 	_ = RegisterFunction("cos", math.Cos)
 	_ = RegisterFunction("sin", math.Sin)
@@ -47,13 +21,39 @@ func init() {
 	_ = RegisterFunction("exp", math.Exp)
 }
 
+type OpFunc func(float64) float64
+
+var functions = make(map[string]OpFunc)
+
+type OpFunction struct {
+	operation.Operation
+	FunctionName string
+	Function     OpFunc
+	Value        operation.Operation
+}
+
+func (f OpFunction) Eval() *operation.Result {
+	var innerRes = f.Value.Eval()
+
+	if innerRes.IsNumber() {
+		var res = f.Function(innerRes.GetNumber())
+		return operation.NewNumberResult(res)
+	}
+
+	return operation.NewStringResult(f.FunctionName + "(" + innerRes.GetString() + ")")
+}
+
+func (f OpFunction) String() string {
+	return f.FunctionName + "(" + f.Value.String() + ")"
+}
+
 //New Creates a new function operator
 func New(functionName string, value operation.Operation) (operation.Operation, error) {
 	if value == nil {
 		return nil, errors.New("ArgumentIsNil")
 	}
 	if function, contains := functions[functionName]; contains {
-		return &opFunction{
+		return &OpFunction{
 			FunctionName: functionName,
 			Function:     function,
 			Value:        value,
@@ -63,7 +63,7 @@ func New(functionName string, value operation.Operation) (operation.Operation, e
 }
 
 func NewUsingTempFunc(function OpFunc, value operation.Operation) operation.Operation {
-	return &opFunction{
+	return &OpFunction{
 		FunctionName: "temp",
 		Function:     function,
 		Value:        value,
