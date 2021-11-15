@@ -1,8 +1,8 @@
 package unary
 
 import (
-	"emorisse.fr/go-calculator/operation"
-	"emorisse.fr/go-calculator/utils"
+	"emorisse.fr/go-calculator/pkg/operation"
+	"emorisse.fr/go-calculator/pkg/utils"
 	"errors"
 )
 

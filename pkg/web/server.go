@@ -1,8 +1,8 @@
 package web
 
 import (
-	"emorisse.fr/go-calculator/operation"
-	"emorisse.fr/go-calculator/parser"
+	"emorisse.fr/go-calculator/pkg/operation"
+	"emorisse.fr/go-calculator/pkg/parser"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -30,14 +30,15 @@ type calculationReq struct {
 	Calculation string `json:"computation"`
 }
 
-func StartServer() {
+func StartServer(address, port string) {
 	var staticFolder = http.FileServer(http.Dir("./static"))
 
 	http.Handle("/", staticFolder)
 	http.HandleFunc("/api/calculate", handleApiCalculate)
+	var addr = fmt.Sprintf("%s:%s", address, port)
 
-	logger.Println("Starting server listening to port 8080...")
-	err := http.ListenAndServe(":8080", nil)
+	logger.Printf("Starting server listening to port %s...\n", addr)
+	err := http.ListenAndServe(addr, nil)
 
 	if err != nil {
 		logger.Fatalln(err)

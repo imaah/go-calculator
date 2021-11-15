@@ -1,7 +1,7 @@
 package number
 
 import (
-	"emorisse.fr/go-calculator/operation"
+	"emorisse.fr/go-calculator/pkg/operation"
 	"fmt"
 )
 

@@ -19,17 +19,11 @@ type Result struct {
 }
 
 func (r Result) IsNumber() bool {
-	if r.resType == OpResultNumber {
-		return true
-	}
-	return false
+	return r.resType == OpResultNumber
 }
 
 func (r Result) IsString() bool {
-	if r.resType == OpResultString {
-		return true
-	}
-	return false
+	return r.resType == OpResultString
 }
 
 func (r Result) GetNumber() float64 {

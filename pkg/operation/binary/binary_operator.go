@@ -1,8 +1,8 @@
 package binary
 
 import (
-	"emorisse.fr/go-calculator/operation"
-	"emorisse.fr/go-calculator/utils"
+	"emorisse.fr/go-calculator/pkg/operation"
+	"emorisse.fr/go-calculator/pkg/utils"
 	"errors"
 	"fmt"
 	"math"
@@ -26,17 +26,17 @@ type opBinary struct {
 func (b *opBinary) Eval() *operation.Result {
 	switch b.Symbol {
 	case '+':
-		return add(b.Left.Eval(), b.Right.Eval())
+		return b.add(b.Right.Eval())
 	case '-':
-		return subtract(b.Left.Eval(), b.Right.Eval())
+		return b.subtract(b.Right.Eval())
 	case '/':
-		return divide(b.Left.Eval(), b.Right.Eval())
+		return b.divide(b.Right.Eval())
 	case '*':
-		return multiply(b.Left.Eval(), b.Right.Eval())
+		return b.multiply(b.Right.Eval())
 	case '^':
-		return pow(b.Left.Eval(), b.Right.Eval())
+		return b.pow(b.Right.Eval())
 	case '%':
-		return modulo(b.Left.Eval(), b.Right.Eval())
+		return b.modulo(b.Right.Eval())
 	}
 	return nil
 }
@@ -45,7 +45,9 @@ func (b opBinary) String() string {
 	return fmt.Sprintf("(%s %c %s)", b.Left.String(), b.Symbol, b.Right.String())
 }
 
-func multiply(left, right *operation.Result) *operation.Result {
+func (b *opBinary) multiply(right *operation.Result) *operation.Result {
+	var left = b.Left.Eval()
+
 	if left.IsNumber() && right.IsNumber() {
 		var result = left.GetNumber() * right.GetNumber()
 		return operation.NewNumberResult(result)
@@ -54,7 +56,9 @@ func multiply(left, right *operation.Result) *operation.Result {
 	return operation.NewStringResult(left.GetString() + " * " + right.GetString())
 }
 
-func divide(left, right *operation.Result) *operation.Result {
+func (b *opBinary) divide(right *operation.Result) *operation.Result {
+	var left = b.Left.Eval()
+
 	if left.IsNumber() && right.IsNumber() {
 		var result = left.GetNumber() / right.GetNumber()
 		return operation.NewNumberResult(result)
@@ -63,7 +67,9 @@ func divide(left, right *operation.Result) *operation.Result {
 	return operation.NewStringResult(left.GetString() + " / " + right.GetString())
 }
 
-func add(left, right *operation.Result) *operation.Result {
+func (b *opBinary) add(right *operation.Result) *operation.Result {
+	var left = b.Left.Eval()
+
 	if left.IsNumber() && right.IsNumber() {
 		var result = left.GetNumber() + right.GetNumber()
 		return operation.NewNumberResult(result)
@@ -72,7 +78,9 @@ func add(left, right *operation.Result) *operation.Result {
 	return operation.NewStringResult(left.GetString() + " + " + right.GetString())
 }
 
-func subtract(left, right *operation.Result) *operation.Result {
+func (b *opBinary) subtract(right *operation.Result) *operation.Result {
+	var left = b.Left.Eval()
+
 	if left.IsNumber() && right.IsNumber() {
 		var result = left.GetNumber() - right.GetNumber()
 		return operation.NewNumberResult(result)
@@ -81,7 +89,9 @@ func subtract(left, right *operation.Result) *operation.Result {
 	return operation.NewStringResult(left.GetString() + " - " + right.GetString())
 }
 
-func pow(left, right *operation.Result) *operation.Result {
+func (b *opBinary) pow(right *operation.Result) *operation.Result {
+	var left = b.Left.Eval()
+
 	if left.IsNumber() && right.IsNumber() {
 		var result = math.Pow(left.GetNumber(), right.GetNumber())
 		return operation.NewNumberResult(result)
@@ -90,7 +100,9 @@ func pow(left, right *operation.Result) *operation.Result {
 	return operation.NewStringResult(left.GetString() + " ^ " + right.GetString())
 }
 
-func modulo(left, right *operation.Result) *operation.Result {
+func (b *opBinary) modulo(right *operation.Result) *operation.Result {
+	var left = b.Left.Eval()
+
 	if left.IsNumber() && right.IsNumber() {
 		var result = math.Mod(left.GetNumber(), right.GetNumber())
 		return operation.NewNumberResult(result)

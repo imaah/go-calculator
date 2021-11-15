@@ -1,11 +1,11 @@
 package parser
 
 import (
-	"emorisse.fr/go-calculator/operation"
-	"emorisse.fr/go-calculator/operation/binary"
-	"emorisse.fr/go-calculator/operation/function"
-	"emorisse.fr/go-calculator/operation/number"
-	"emorisse.fr/go-calculator/operation/unary"
+	"emorisse.fr/go-calculator/pkg/operation"
+	"emorisse.fr/go-calculator/pkg/operation/binary"
+	"emorisse.fr/go-calculator/pkg/operation/function"
+	"emorisse.fr/go-calculator/pkg/operation/number"
+	"emorisse.fr/go-calculator/pkg/operation/unary"
 	"errors"
 	"fmt"
 	"regexp"

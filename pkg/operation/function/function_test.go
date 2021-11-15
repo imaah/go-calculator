@@ -1,7 +1,7 @@
 package function
 
 import (
-	"emorisse.fr/go-calculator/operation/number"
+	"emorisse.fr/go-calculator/pkg/operation/number"
 	"math"
 	"testing"
 )

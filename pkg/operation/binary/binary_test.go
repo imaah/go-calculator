@@ -1,7 +1,7 @@
 package binary
 
 import (
-	"emorisse.fr/go-calculator/operation/number"
+	"emorisse.fr/go-calculator/pkg/operation/number"
 	"testing"
 )
 
