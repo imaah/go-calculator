@@ -63,6 +63,7 @@ func Parse(str string) (operation.Operation, error) {
 	groups[key] = str
 
 	groups = cleanMap(groups)
+//	fmt.Println(groups)
 	return buildOperator(groups, lastIndex)
 }
 
@@ -292,21 +293,27 @@ func extractIndex(key string) int {
 func cleanMap(groups groupMap) groupMap {
 	var regex, _ = regexp.Compile("^\\( *:\\d+ *\\)$")
 	for key, val := range groups {
-		if regex.MatchString(val) {
-			delete(groups, key)
+			if regex.MatchString(val) {
+					delete(groups, key)
 
-			var redirectTo = fmt.Sprintf(":%d", extractIndex(val))
-			groups = removeInOther(key, redirectTo, groups)
-		}
+					var redirectTo = fmt.Sprintf(":%d", extractIndex(val))
+					groups = removeInOther(key, redirectTo, groups)
+			}
 	}
 	return groups
 }
 
 func removeInOther(remove, redirectTo string, groups groupMap) groupMap {
+	var regexStr = fmt.Sprintf(" *%s *", remove)
+	var regexStr2 = fmt.Sprintf(" *%s[0-9]+ *", remove)
+//      fmt.Println(regexStr, "->", redirectTo)
+	var regex = regexp.MustCompile(regexStr)
+	var regex2 = regexp.MustCompile(regexStr2)
 	for key, val := range groups {
-		if strings.Contains(val, remove) {
-			groups[key] = strings.Replace(val, remove, redirectTo, 1)
-		}
+			if regex.MatchString(val) && !regex2.MatchString(val) {
+//                      fmt.Println(val, remove)
+					groups[key] = regex.ReplaceAllString(val, redirectTo)
+			}
 	}
 	return groups
 }
