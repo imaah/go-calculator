@@ -6,6 +6,8 @@ import (
 	"math"
 )
 
+var functions = make(map[string]OpFunc)
+
 func init() {
 	_ = RegisterFunction("cos", math.Cos)
 	_ = RegisterFunction("sin", math.Sin)
@@ -22,8 +24,6 @@ func init() {
 }
 
 type OpFunc func(float64) float64
-
-var functions = make(map[string]OpFunc)
 
 type OpFunction struct {
 	operation.Operation

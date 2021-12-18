@@ -8,8 +8,6 @@ import (
 	"regexp"
 )
 
-type Arguments map[string]string
-
 var ArgumentAliases = map[rune]string{
 	'w': "web-server",
 	'p': "port",
@@ -18,6 +16,8 @@ var ArgumentAliases = map[rune]string{
 }
 
 var KeyRegex = regexp.MustCompile(`^--([a-zA-z0-9\\-]+)|-([a-zA-Z])$`)
+
+type Arguments map[string]string
 
 func (a Arguments) GetOrDefault(key, defaultValue string) string {
 	if value, contains := a[key]; contains {

@@ -2,15 +2,15 @@ package operation
 
 import "fmt"
 
+var OpResultNumber ResultType = 0
+var OpResultString ResultType = 1
+
+type ResultType uint8
+
 type Operation interface {
 	Eval() *Result
 	String() string
 }
-
-type ResultType uint8
-
-var OpResultNumber ResultType = 0
-var OpResultString ResultType = 1
 
 type Result struct {
 	resType  ResultType
