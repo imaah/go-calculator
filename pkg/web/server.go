@@ -1,8 +1,6 @@
 package web
 
 import (
-	"emorisse.fr/go-calculator/pkg/operation"
-	"emorisse.fr/go-calculator/pkg/parser"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,6 +8,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"emorisse.fr/go-calculator/pkg/operation"
+	"emorisse.fr/go-calculator/pkg/parser"
 )
 
 var logger *log.Logger
@@ -19,17 +20,29 @@ func init() {
 }
 
 func StartServer(address, port string) {
+	var mux = http.NewServeMux()
+
 	var staticFolder = http.FileServer(http.Dir("./static"))
 
-	http.Handle("/", staticFolder)
-	http.HandleFunc("/api/calculate", handleApiCalculate)
+	mux.Handle("/", staticFolder)
+	mux.HandleFunc("/api/calculate", handleApiCalculate)
+
+	var middleware = logMiddleware(mux)
+
 	var addr = fmt.Sprintf("%s:%s", address, port)
 
 	logger.Printf("Starting server listening to port %s...\n", addr)
-	err := http.ListenAndServe(addr, nil)
+	err := http.ListenAndServe(addr, middleware)
 
 	if err != nil {
 		logger.Fatalln(err)
+	}
+}
+
+func logMiddleware(next http.Handler) http.HandlerFunc {
+	return func(res http.ResponseWriter, req *http.Request) {
+		logger.Printf("%s %s %s\n", req.Method, req.URL, req.Proto)
+		next.ServeHTTP(res, req)
 	}
 }
 
