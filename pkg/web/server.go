@@ -35,7 +35,7 @@ func StartServer(address, port string) {
 	err := http.ListenAndServe(addr, middleware)
 
 	if err != nil {
-		var errFormat = fmt.Errorf("Failed to start the server : %s\n", err)
+		var errFormat = fmt.Errorf("Failed to start the server : %w\n", err)
 		logger.Fatalln(errFormat)
 	}
 }
@@ -103,7 +103,7 @@ func sendJson(elem interface{}, res http.ResponseWriter) {
 	var _, err = res.Write(jsonElem)
 
 	if err != nil {
-		var errFormat = fmt.Errorf("Failed to send data to client : %s\n", err)
+		var errFormat = fmt.Errorf("Failed to send data to client : %w\n", err)
 		logger.Println(errFormat)
 	}
 }
