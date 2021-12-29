@@ -3,6 +3,7 @@ package function
 import (
 	"emorisse.fr/go-calculator/pkg/operation"
 	"errors"
+	"fmt"
 	"math"
 )
 
@@ -59,7 +60,7 @@ func New(functionName string, value operation.Operation) (operation.Operation, e
 			Value:        value,
 		}, nil
 	}
-	return nil, errors.New("InvalidFunctionName")
+	return nil, errors.New(fmt.Sprintf("InvalidFunctionName (%s)", functionName))
 }
 
 func NewUsingTempFunc(function OpFunc, value operation.Operation) operation.Operation {

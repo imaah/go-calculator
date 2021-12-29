@@ -1,85 +1,86 @@
 package preprocessor
 
 import (
-	"emorisse.fr/go-calculator/pkg/operation/binary"
-	"emorisse.fr/go-calculator/pkg/parser/regex"
-	"emorisse.fr/go-calculator/pkg/parser/types"
-	"emorisse.fr/go-calculator/pkg/utils"
+	"errors"
 	"fmt"
-	"regexp"
 	"strings"
 )
 
-func ProcessBinary(str string, lastIndex int, groups types.GroupMap) (string, int, types.GroupMap) {
-	for _, operators := range binary.OperatorPriority {
-		str, lastIndex, groups = processPriority(str, lastIndex, groups, operators)
+func ProcessParenthesis(str string, m map[uint]string) (uint, error) {
+	var stack = make([]int, 0)
+	var num = uint(1)
+	var i = 0
+
+	for i < len(str) {
+		var c = str[i]
+
+		if c == '(' {
+			stack = append(stack, i)
+		}
+		if c == ')' {
+			if len(stack) > 0 {
+				var start = stack[len(stack)-1]
+				var end = i
+				stack = stack[0 : len(stack)-1]
+
+				var sub = str[start : end+1]
+				var prelen = len(str)
+				str = strings.Replace(str, sub, fmt.Sprintf("{%d}", num), 1)
+
+				i -= prelen - len(str)
+
+				m[num] = sub[1 : len(sub)-1]
+				num += 1
+			} else {
+				return 0, errors.New("ParseError: missing left parenthesis")
+			}
+		}
+
+		i++
 	}
 
-	return str, lastIndex, groups
+	m[0] = str
+
+	if len(stack) != 0 {
+		return 0, errors.New("ParseError: missing right parenthesis")
+	}
+
+	return num, nil
 }
 
-func ProcessUnary(str string, lastIndex int, groups types.GroupMap) (string, int, types.GroupMap) {
-	if regex.IsUnaryExpression(str) || regex.IsBinaryExpression(str) {
-		return str, lastIndex, groups
+func ProcessToken(str string, token rune, cIdx uint, minIdx uint, m map[uint]string) (uint, error) {
+	var i = 0
+	var num = minIdx
+
+	for i < len(str) {
+		var c = str[i]
+
+		if rune(c) == token {
+			var leftSub = str[:i]
+			var rightSub = str[i+1:]
+			var prelen = len(str)
+
+			m[num] = leftSub
+			str = strings.Replace(str, leftSub, fmt.Sprintf("{%d}", num), 1)
+			num += 1
+
+			m[num] = rightSub
+			str = strings.Replace(str, rightSub, fmt.Sprintf("{%d}", num), 1)
+			num += 1
+
+			i -= min(prelen-len(str)-1, 0)
+		}
+		i++
 	}
 
-	var una = regex.FindUnaryExpressionRegex.FindAllString(str, -1)
+	m[cIdx] = str
 
-	for i, group := range una {
-		key := fmt.Sprintf(":%d", i+lastIndex)
-		groups[key] = group
-		str = strings.Replace(str, group, key, 1)
-	}
-
-	return str, lastIndex + len(una), groups
+	return num, nil
 }
 
-func ProcessFunctions(str string, lastIndex int, groups types.GroupMap) (string, int, types.GroupMap) {
-	var functions = regex.FindFunctionExpressionsRegex.FindAllString(str, -1)
-
-	for i, group := range functions {
-		key := fmt.Sprintf(":%d", i+lastIndex)
-		groups[key] = group
-		str = strings.Replace(str, group, key, 1)
+func min(a, b int) int {
+	if a < b {
+		return a
 	}
-
-	return str, lastIndex + len(functions), groups
-}
-
-func ProcessParenthesis(str string, lastIndex int, groups types.GroupMap) (string, int, types.GroupMap) {
-	var group = regex.InnerParenthesisRegex.FindString(str)
-	var i int
-
-	for i = 0; group != ""; i++ {
-		key := fmt.Sprintf(":%d", i+lastIndex)
-		groups[key] = group
-		str = strings.Replace(str, group, key, 1)
-		lastIndex++
-		group = regex.InnerParenthesisRegex.FindString(str)
-	}
-
-	return str, lastIndex + i, groups
-}
-
-func processPriority(str string, lastIndex int, groups types.GroupMap, operators []rune) (string, int, types.GroupMap) {
-	regexStr := fmt.Sprintf("-?(:\\d+|\\d+(?:\\.\\d*)?) *[%s] *-?(:\\d+|-?\\d+(?:\\.\\d*)?)",
-		utils.SanitizeOperators(operators))
-	var regexBinaryOperator = regexp.MustCompile(regexStr)
-	var fullMatch = regexp.MustCompile("^" + regexStr + "$")
-
-	if fullMatch.MatchString(str) {
-		return str, lastIndex, groups
-	}
-
-	var group = regexBinaryOperator.FindString(str)
-	var i int
-
-	for i = 0; group != ""; i++ {
-		key := fmt.Sprintf(":%d", i+lastIndex)
-		groups[key] = group
-		str = strings.Replace(str, group, key, 1)
-		group = regexBinaryOperator.FindString(str)
-	}
-
-	return str, lastIndex + i, groups
+	return b
 }

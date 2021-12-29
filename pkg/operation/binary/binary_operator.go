@@ -8,14 +8,8 @@ import (
 	"math"
 )
 
-//KnownSymbols all symbols that can be used for a binary operator
-var KnownSymbols = []rune{'-', '+', '*', '/', '^', '%'}
-
-var OperatorPriority = [][]rune{
-	{'^'},
-	{'*', '/', '%'},
-	{'-', '+'},
-}
+//OperatorPriority all symbols that can be used for a binary operator ordered by priority
+var OperatorPriority = []rune{'^', '*', '/', '%', '-', '+'}
 
 type OpBinary struct {
 	operation.Operation
@@ -114,10 +108,10 @@ func (b *OpBinary) modulo(right *operation.Result) *operation.Result {
 //New Creates a new binary operator
 func New(symbol rune, left, right operation.Operation) (operation.Operation, error) {
 	if left == nil || right == nil {
-		return nil, errors.New("ArgumentIsNil")
+		return nil, errors.New("ArgumentIsNil (binary)")
 	}
 
-	if utils.RuneArrayContains(KnownSymbols, symbol) {
+	if utils.RuneArrayContains(OperatorPriority, symbol) {
 		operator := OpBinary{
 			Right:  right,
 			Left:   left,

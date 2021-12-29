@@ -1,6 +1,7 @@
 package web
 
 import (
+	"emorisse.fr/go-calculator/pkg/parser"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,7 +11,6 @@ import (
 	"os"
 
 	"emorisse.fr/go-calculator/pkg/operation"
-	"emorisse.fr/go-calculator/pkg/parser"
 )
 
 var logger *log.Logger
@@ -58,6 +58,7 @@ func handleApiCalculate(res http.ResponseWriter, req *http.Request) {
 
 		if err != nil {
 			sendJson(errorRes{Error: err.Error()}, res)
+			return
 		}
 
 		var result = fmt.Sprintf("%s", ope.Eval().GetString())

@@ -40,7 +40,7 @@ func invert(right *operation.Result) *operation.Result {
 //New Creates a new unary operator
 func New(symbol rune, right operation.Operation) (operation.Operation, error) {
 	if right == nil {
-		return nil, errors.New("ArgumentIsNil")
+		return nil, errors.New("ArgumentIsNil (unary)")
 	}
 
 	if utils.RuneArrayContains(KnownSymbols, symbol) {
