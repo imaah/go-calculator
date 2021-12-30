@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"strings"
 )
 
 var functions = make(map[string]OpFunc)
@@ -53,9 +54,10 @@ func New(functionName string, value operation.Operation) (operation.Operation, e
 	if value == nil {
 		return nil, errors.New("ArgumentIsNil")
 	}
-	if function, contains := functions[functionName]; contains {
+	var lowFunName = strings.ToLower(functionName)
+	if function, contains := functions[lowFunName]; contains {
 		return &OpFunction{
-			FunctionName: functionName,
+			FunctionName: lowFunName,
 			Function:     function,
 			Value:        value,
 		}, nil
