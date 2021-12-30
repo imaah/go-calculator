@@ -68,7 +68,7 @@ func ProcessToken(str string, token rune, cIdx uint, minIdx uint, m map[uint]str
 			str = strings.Replace(str, rightSub, fmt.Sprintf("{%d}", num), 1)
 			num += 1
 
-			i -= min(prelen-len(str)-1, 0)
+			i -= max(prelen-len(str)-1, 0)
 		}
 		i++
 	}
@@ -78,7 +78,7 @@ func ProcessToken(str string, token rune, cIdx uint, minIdx uint, m map[uint]str
 	return num, nil
 }
 
-func min(a, b int) int {
+func max(a, b int) int {
 	if a < b {
 		return a
 	}

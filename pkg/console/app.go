@@ -28,10 +28,11 @@ func Start() {
 		opt, err := parser.Parse(input)
 
 		if err != nil {
-			log.Fatalln(err)
+			var errFormat = fmt.Errorf("Parsing error: %w\n", err)
+			log.Println(errFormat)
+		} else {
+			fmt.Println("=", opt.Eval().GetString())
 		}
-
-		fmt.Println("=", opt.Eval().GetString())
 	}
 
 	fmt.Println("Bye!")

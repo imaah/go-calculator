@@ -4,6 +4,7 @@ import (
 	"emorisse.fr/go-calculator/pkg/operation"
 	"emorisse.fr/go-calculator/pkg/utils"
 	"errors"
+	"fmt"
 )
 
 //KnownSymbols all symbols that can be used for a binary operator
@@ -50,5 +51,5 @@ func New(symbol rune, right operation.Operation) (operation.Operation, error) {
 		}
 		return &operator, nil
 	}
-	return nil, errors.New("InvalidOperator")
+	return nil, errors.New(fmt.Sprintf("InvalidUnaryOperator (%c)", symbol))
 }
