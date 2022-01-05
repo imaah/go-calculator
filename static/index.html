@@ -41,6 +41,8 @@
             submit.addEventListener("click", async () => {
                 if (!submit.getAttribute("disabled")) {
 
+                    if (calculation.value.trim() === "") return;
+
                     let res = await fetch("/api/calculate", {
                         method: 'post',
                         body: JSON.stringify({
