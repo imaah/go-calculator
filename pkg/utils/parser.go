@@ -6,7 +6,7 @@ import (
 )
 
 var OnlySubGroupRegex = regexp.MustCompile(`^ *{[0-9]+} *$`)
-var SubGroupRegex = regexp.MustCompile(` *{[0-9]+} *`)
+var SubGroupRegex = regexp.MustCompile(` *(?:{[0-9]+}|[0-9]+(\.[0-9]*)?) *`)
 
 func IsSubGroup(str string) bool {
 	return OnlySubGroupRegex.MatchString(str)

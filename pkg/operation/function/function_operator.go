@@ -62,7 +62,7 @@ func New(functionName string, value operation.Operation) (operation.Operation, e
 			Value:        value,
 		}, nil
 	}
-	return nil, errors.New(fmt.Sprintf("InvalidFunctionName (%s)", functionName))
+	return nil, errors.New(fmt.Sprintf("invalid function: %s", functionName))
 }
 
 func NewUsingTempFunc(function OpFunc, value operation.Operation) operation.Operation {

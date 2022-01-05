@@ -119,5 +119,5 @@ func New(symbol rune, left, right operation.Operation) (operation.Operation, err
 		}
 		return &operator, nil
 	}
-	return nil, errors.New(fmt.Sprintf("InvalidBinaryOperator (%c)", symbol))
+	return nil, errors.New(fmt.Sprintf("invalid operator: %c", symbol))
 }

@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"emorisse.fr/go-calculator/pkg/errors"
 	"emorisse.fr/go-calculator/pkg/operation"
 	"emorisse.fr/go-calculator/pkg/operation/binary"
 	"emorisse.fr/go-calculator/pkg/operation/function"
@@ -14,6 +15,13 @@ import (
 
 func BuildOperator(m map[uint]string, index uint) (operation.Operation, error) {
 	var elem = m[index]
+	return BuildOperatorStr(m, elem)
+}
+
+func BuildOperatorStr(m map[uint]string, elem string) (operation.Operation, error) {
+	if strings.TrimSpace(elem) == "" {
+		return nil, errors.EmptyStringError
+	}
 
 	if utils.IsSubGroup(elem) {
 		var val, _ = utils.GetSubGroupValue(strings.TrimSpace(elem))
@@ -21,24 +29,23 @@ func BuildOperator(m map[uint]string, index uint) (operation.Operation, error) {
 	}
 
 	if regex.IsFunctionExpression(elem) {
-		return BuildFunction(m, index)
+		return BuildFunction(m, elem)
 	}
 
 	if regex.IsBinaryExpression(elem) {
-		return BuildBinary(m, index)
+		return BuildBinary(m, elem)
 	}
 
 	var num, err = strconv.ParseFloat(strings.TrimSpace(elem), 64)
 
 	if err != nil {
-		return nil, err
+		return BuildBinary(m, elem)
 	}
 
 	return number.New(num), nil
 }
 
-func BuildFunction(m map[uint]string, index uint) (operation.Operation, error) {
-	var elem = m[index]
+func BuildFunction(m map[uint]string, elem string) (operation.Operation, error) {
 	var funName = strings.TrimSpace(utils.SubGroupRegex.ReplaceAllString(elem, ""))
 	var val, _ = utils.GetSubGroupValue(utils.SubGroupRegex.FindString(elem))
 
@@ -51,37 +58,55 @@ func BuildFunction(m map[uint]string, index uint) (operation.Operation, error) {
 	return function.New(funName, op)
 }
 
-func BuildBinary(m map[uint]string, index uint) (operation.Operation, error) {
-	var elem = m[index]
+func BuildBinary(m map[uint]string, elem string) (operation.Operation, error) {
+	if strings.TrimSpace(elem) == "" {
+		return nil, errors.EmptyStringError
+	}
 	var op = rune(strings.TrimSpace(utils.SubGroupRegex.ReplaceAllString(elem, ""))[0])
 	var subs = utils.SubGroupRegex.FindAllString(elem, -1)
-	var leftVal uint
 
-	leftVal, _ = utils.GetSubGroupValue(subs[0])
-
-	for utils.IsSubGroup(m[leftVal]) {
-		leftVal, _ = utils.GetSubGroupValue(m[leftVal])
+	if len(subs) < 2 {
+		return nil, errors.InvalidString
 	}
 
-	var rightVal, _ = utils.GetSubGroupValue(subs[1])
 	var left, right operation.Operation
 	var err error
 
-	right, err = BuildOperator(m, rightVal)
+	right, err = buildSub(m, subs[1])
 
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.TrimSpace(m[leftVal])) == 0 {
-		return unary.New(op, right)
-	}
-
-	left, err = BuildOperator(m, leftVal)
+	left, err = buildSub(m, subs[0])
 
 	if err != nil {
+		if err == errors.EmptyStringError {
+			return unary.New(op, right)
+		}
 		return nil, err
 	}
 
 	return binary.New(op, left, right)
+}
+
+func buildSub(m map[uint]string, elem string) (operation.Operation, error) {
+	if strings.TrimSpace(elem) == "" {
+		return nil, errors.EmptyStringError
+	}
+	if utils.IsSubGroup(elem) {
+		var val, _ = utils.GetSubGroupValue(elem)
+
+		for utils.IsSubGroup(m[val]) {
+			var tmpVal, err = utils.GetSubGroupValue(m[val])
+
+			if err != nil {
+				return BuildOperatorStr(m, m[val])
+			}
+			val = tmpVal
+		}
+
+		return BuildOperator(m, val)
+	}
+	return BuildOperatorStr(m, elem)
 }

@@ -23,6 +23,9 @@ var failingSamples = [...]string{
 	"-",
 	"1 - *",
 	"((2 + 5) * cos(/)) / (sin(24) - (+ * 12))",
+	"hello world!",
+	"ww",
+	"w",
 }
 
 func TestParse__passes(t *testing.T) {

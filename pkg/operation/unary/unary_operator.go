@@ -51,5 +51,5 @@ func New(symbol rune, right operation.Operation) (operation.Operation, error) {
 		}
 		return &operator, nil
 	}
-	return nil, errors.New(fmt.Sprintf("InvalidUnaryOperator (%c)", symbol))
+	return nil, errors.New(fmt.Sprintf("invalid operator: %c", symbol))
 }
