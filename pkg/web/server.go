@@ -1,14 +1,14 @@
 package web
 
 import (
-	"emorisse.fr/go-calculator/pkg/parser"
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+
+	"emorisse.fr/go-calculator/pkg/parser"
 
 	"emorisse.fr/go-calculator/pkg/operation"
 )
@@ -74,7 +74,7 @@ func handleApiCalculate(res http.ResponseWriter, req *http.Request) {
 }
 
 func readCalculation(reader io.Reader) (operation.Operation, error) {
-	var content, err = ioutil.ReadAll(reader)
+	var content, err = io.ReadAll(reader)
 	var ope operation.Operation
 
 	if err != nil {
@@ -89,7 +89,7 @@ func readCalculation(reader io.Reader) (operation.Operation, error) {
 		return nil, err
 	}
 
-	ope, err = parser.Parse(req.Calculation)
+	ope, err = parser.ParseV2(req.Calculation)
 
 	if err != nil {
 		return nil, err

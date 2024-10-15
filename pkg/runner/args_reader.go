@@ -1,11 +1,11 @@
 package runner
 
 import (
+	"errors"
+	"regexp"
+
 	"emorisse.fr/go-calculator/pkg/console"
 	"emorisse.fr/go-calculator/pkg/web"
-	"errors"
-	"fmt"
-	"regexp"
 )
 
 var ArgumentAliases = map[rune]string{
@@ -46,7 +46,6 @@ func ReadArguments(args []string) Arguments {
 	var arguments = make(Arguments)
 
 	for _, arg := range args {
-		fmt.Println(arg, KeyRegex.MatchString(arg))
 		if KeyRegex.MatchString(arg) {
 			if key != "" {
 				arguments[key] = "true"
@@ -54,7 +53,6 @@ func ReadArguments(args []string) Arguments {
 
 			// ignoring error because we know that arg matches the regex.
 			key, _ = ReadArgumentKey(arg)
-			fmt.Println(arg, key)
 		} else if key != "" {
 			arguments[key] = arg
 			key = ""

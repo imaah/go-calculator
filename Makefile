@@ -1,4 +1,4 @@
-OUTPUT_FILE=calcul.out
+OUTPUT_FILE=calculator
 
 all: test build
 

@@ -1,9 +1,13 @@
-package number
+package operation_test
 
-import "testing"
+import (
+	"testing"
+
+	"emorisse.fr/go-calculator/pkg/operation"
+)
 
 func TestOpNumber_Eval(t *testing.T) {
-	var num = New(8)
+	var num = operation.NewNumber(8)
 
 	if num.Eval().GetNumber() != 8 {
 		t.Logf("Should be %f but got %f", float64(8), num.Eval().GetNumber())

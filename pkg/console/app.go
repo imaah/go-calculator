@@ -25,7 +25,7 @@ func Start() {
 			continue
 		}
 
-		opt, err := parser.Parse(input)
+		opt, err := parser.ParseV2(input)
 
 		if err != nil {
 			var errFormat = fmt.Errorf("Parsing error: %w\n", err)

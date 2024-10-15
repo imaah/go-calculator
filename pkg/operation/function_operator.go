@@ -1,7 +1,6 @@
-package function
+package operation
 
 import (
-	"emorisse.fr/go-calculator/pkg/operation"
 	"errors"
 	"fmt"
 	"math"
@@ -23,34 +22,35 @@ func init() {
 	_ = RegisterFunction("floor", math.Floor)
 	_ = RegisterFunction("round", math.Round)
 	_ = RegisterFunction("exp", math.Exp)
+	_ = RegisterFunction("log10", math.Log10)
 }
 
 type OpFunc func(float64) float64
 
 type OpFunction struct {
-	operation.Operation
+	Operation
 	FunctionName string
 	Function     OpFunc
-	Value        operation.Operation
+	Value        Operation
 }
 
-func (f OpFunction) Eval() *operation.Result {
+func (f OpFunction) Eval() *Result {
 	var innerRes = f.Value.Eval()
 
 	if innerRes.IsNumber() {
 		var res = f.Function(innerRes.GetNumber())
-		return operation.NewNumberResult(res)
+		return NewNumberResult(res)
 	}
 
-	return operation.NewStringResult(f.FunctionName + "(" + innerRes.GetString() + ")")
+	return NewStringResult(f.FunctionName + "(" + innerRes.GetString() + ")")
 }
 
 func (f OpFunction) String() string {
 	return f.FunctionName + "(" + f.Value.String() + ")"
 }
 
-//New Creates a new function operator
-func New(functionName string, value operation.Operation) (operation.Operation, error) {
+// New Creates a new function operator
+func NewFunction(functionName string, value Operation) (Operation, error) {
 	if value == nil {
 		return nil, errors.New("ArgumentIsNil")
 	}
@@ -65,7 +65,7 @@ func New(functionName string, value operation.Operation) (operation.Operation, e
 	return nil, errors.New(fmt.Sprintf("invalid function: %s", functionName))
 }
 
-func NewUsingTempFunc(function OpFunc, value operation.Operation) operation.Operation {
+func NewFunctionUsingTempFunc(function OpFunc, value Operation) Operation {
 	return &OpFunction{
 		FunctionName: "temp",
 		Function:     function,
@@ -73,7 +73,7 @@ func NewUsingTempFunc(function OpFunc, value operation.Operation) operation.Oper
 	}
 }
 
-//RegisterFunction Allows to register a new function for the function operator
+// RegisterFunction Allows to register a new function for the function operator
 func RegisterFunction(name string, function OpFunc) error {
 	if function == nil {
 		return errors.New("ArgumentIsNil")
