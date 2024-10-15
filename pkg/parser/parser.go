@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"emorisse.fr/go-calculator/pkg/operation"
+	"github.com/imaah/go-calculator/pkg/operation"
 )
 
 func ParseV2(str string) (operation.Operation, error) {

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"emorisse.fr/go-calculator/pkg/runner"
+	"github.com/imaah/go-calculator/pkg/runner"
 	"os"
 )
 

@@ -2,7 +2,7 @@ package console
 
 import (
 	"bufio"
-	"emorisse.fr/go-calculator/pkg/parser"
+	"github.com/imaah/go-calculator/pkg/parser"
 	"fmt"
 	"log"
 	"os"

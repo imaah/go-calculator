@@ -3,8 +3,8 @@ package parser
 import (
 	"fmt"
 
-	"emorisse.fr/go-calculator/pkg/operation"
-	"emorisse.fr/go-calculator/pkg/stack"
+	"github.com/imaah/go-calculator/pkg/operation"
+	"github.com/imaah/go-calculator/pkg/stack"
 )
 
 func Evaluate(tokens []Token) (operation.Operation, error) {

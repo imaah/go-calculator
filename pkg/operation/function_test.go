@@ -1,7 +1,7 @@
 package operation_test
 
 import (
-	"emorisse.fr/go-calculator/pkg/operation"
+	"github.com/imaah/go-calculator/pkg/operation"
 	"math"
 	"testing"
 )

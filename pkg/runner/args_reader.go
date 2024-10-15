@@ -4,8 +4,8 @@ import (
 	"errors"
 	"regexp"
 
-	"emorisse.fr/go-calculator/pkg/console"
-	"emorisse.fr/go-calculator/pkg/web"
+	"github.com/imaah/go-calculator/pkg/console"
+	"github.com/imaah/go-calculator/pkg/web"
 )
 
 var ArgumentAliases = map[rune]string{

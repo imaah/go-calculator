@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"os"
 
-	"emorisse.fr/go-calculator/pkg/parser"
+	"github.com/imaah/go-calculator/pkg/parser"
 
-	"emorisse.fr/go-calculator/pkg/operation"
+	"github.com/imaah/go-calculator/pkg/operation"
 )
 
 var logger *log.Logger

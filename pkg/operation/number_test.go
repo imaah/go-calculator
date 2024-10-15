@@ -3,7 +3,7 @@ package operation_test
 import (
 	"testing"
 
-	"emorisse.fr/go-calculator/pkg/operation"
+	"github.com/imaah/go-calculator/pkg/operation"
 )
 
 func TestOpNumber_Eval(t *testing.T) {
