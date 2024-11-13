@@ -20,22 +20,22 @@ func init() {
 }
 
 func StartServer(address, port string) {
-	var mux = http.NewServeMux()
+	mux := http.NewServeMux()
 
-	var staticFolder = http.FileServer(http.Dir("./static"))
+	staticFolder := http.FileServer(http.Dir("./static"))
 
 	mux.Handle("/", staticFolder)
 	mux.HandleFunc("/api/calculate", handleApiCalculate)
 
-	var middleware = logMiddleware(mux)
+	middleware := logMiddleware(mux)
 
-	var addr = fmt.Sprintf("%s:%s", address, port)
+	addr := fmt.Sprintf("%s:%s", address, port)
 
 	logger.Printf("Starting server listening to port %s...\n", addr)
 	err := http.ListenAndServe(addr, middleware)
 
 	if err != nil {
-		var errFormat = fmt.Errorf("Failed to start the server : %w\n", err)
+		errFormat := fmt.Errorf("Failed to start the server : %w\n", err)
 		logger.Fatalln(errFormat)
 	}
 }
@@ -55,14 +55,14 @@ func handleApiCalculate(res http.ResponseWriter, req *http.Request) {
 	if req.Method == "POST" {
 		res.WriteHeader(200)
 
-		var ope, err = readCalculation(req.Body)
+		ope, err := readCalculation(req.Body)
 
 		if err != nil {
 			sendJson(errorRes{Error: err.Error()}, res)
 			return
 		}
 
-		var result = fmt.Sprintf("%s", ope.Eval().GetString())
+		result := fmt.Sprintf("%f", ope.Eval())
 		sendJson(resultRes{result}, res)
 
 		return
@@ -74,7 +74,7 @@ func handleApiCalculate(res http.ResponseWriter, req *http.Request) {
 }
 
 func readCalculation(reader io.Reader) (operation.Operation, error) {
-	var content, err = io.ReadAll(reader)
+	content, err := io.ReadAll(reader)
 	var ope operation.Operation
 
 	if err != nil {
@@ -99,11 +99,11 @@ func readCalculation(reader io.Reader) (operation.Operation, error) {
 }
 
 func sendJson(elem interface{}, res http.ResponseWriter) {
-	var jsonElem, _ = json.Marshal(elem)
-	var _, err = res.Write(jsonElem)
+	jsonElem, _ := json.Marshal(elem)
+	_, err := res.Write(jsonElem)
 
 	if err != nil {
-		var errFormat = fmt.Errorf("Failed to send data to client : %w\n", err)
+		errFormat := fmt.Errorf("Failed to send data to client : %w\n", err)
 		logger.Println(errFormat)
 	}
 }

@@ -27,13 +27,13 @@ func (a Arguments) GetOrDefault(key, defaultValue string) string {
 }
 
 func Run(args []string) {
-	var arguments = ReadArguments(args)
+	arguments := ReadArguments(args)
 
 	//TODO: Add a help description
 
 	if usingWeb, contains := arguments["web-server"]; contains && usingWeb == "true" {
-		var port = arguments.GetOrDefault("port", "8080")
-		var addr = arguments.GetOrDefault("bind-address", "localhost")
+		port := arguments.GetOrDefault("port", "8080")
+		addr := arguments.GetOrDefault("bind-address", "localhost")
 
 		web.StartServer(addr, port)
 	} else {
@@ -42,8 +42,8 @@ func Run(args []string) {
 }
 
 func ReadArguments(args []string) Arguments {
-	var key = ""
-	var arguments = make(Arguments)
+	key := ""
+	arguments := make(Arguments)
 
 	for _, arg := range args {
 		if KeyRegex.MatchString(arg) {
@@ -67,13 +67,13 @@ func ReadArguments(args []string) Arguments {
 }
 
 func ReadArgumentKey(key string) (string, error) {
-	var groups = KeyRegex.FindAllStringSubmatch(key, 1)
+	groups := KeyRegex.FindAllStringSubmatch(key, 1)
 
 	if len(groups) > 0 {
-		var parsedKey = groups[0][1]
+		parsedKey := groups[0][1]
 
 		if parsedKey == "" {
-			var shortcut = rune(groups[0][2][0])
+			shortcut := rune(groups[0][2][0])
 			if fKey, contains := ArgumentAliases[shortcut]; contains {
 				return fKey, nil
 			}

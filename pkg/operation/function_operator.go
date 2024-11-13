@@ -28,21 +28,13 @@ func init() {
 type OpFunc func(float64) float64
 
 type OpFunction struct {
-	Operation
 	FunctionName string
 	Function     OpFunc
 	Value        Operation
 }
 
-func (f OpFunction) Eval() *Result {
-	var innerRes = f.Value.Eval()
-
-	if innerRes.IsNumber() {
-		var res = f.Function(innerRes.GetNumber())
-		return NewNumberResult(res)
-	}
-
-	return NewStringResult(f.FunctionName + "(" + innerRes.GetString() + ")")
+func (f OpFunction) Eval() float64 {
+	return f.Function(f.Value.Eval())
 }
 
 func (f OpFunction) String() string {
@@ -54,7 +46,7 @@ func NewFunction(functionName string, value Operation) (Operation, error) {
 	if value == nil {
 		return nil, errors.New("ArgumentIsNil")
 	}
-	var lowFunName = strings.ToLower(functionName)
+	lowFunName := strings.ToLower(functionName)
 	if function, contains := functions[lowFunName]; contains {
 		return &OpFunction{
 			FunctionName: lowFunName,

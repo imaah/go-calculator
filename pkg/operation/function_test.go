@@ -7,7 +7,7 @@ import (
 )
 
 func TestNew_Function_WrongFunction(t *testing.T) {
-	var _, err = operation.NewFunction("a", operation.NewNumber(1))
+	_, err := operation.NewFunction("a", operation.NewNumber(1))
 
 	if err == nil {
 		t.Logf("Shouldn't be nil but go %s", err)
@@ -17,7 +17,7 @@ func TestNew_Function_WrongFunction(t *testing.T) {
 }
 
 func TestNew_Function_NilArgument(t *testing.T) {
-	var _, err = operation.NewFunction("cos", nil)
+	_, err := operation.NewFunction("cos", nil)
 
 	if err == nil {
 		t.Logf("Shouldn't be nil")
@@ -39,7 +39,7 @@ func TestNewUsingTempFunc(t *testing.T) {
 }
 
 func TestRegisterFunction_Function_NilArgument(t *testing.T) {
-	var err = operation.RegisterFunction("double", nil)
+	err := operation.RegisterFunction("double", nil)
 
 	if err == nil {
 		t.Logf("Shouldn't be nil")
@@ -48,7 +48,7 @@ func TestRegisterFunction_Function_NilArgument(t *testing.T) {
 }
 
 func TestRegisterFunction_Function_Duplicate(t *testing.T) {
-	var err = operation.RegisterFunction("sin", double)
+	err := operation.RegisterFunction("sin", double)
 
 	if err == nil {
 		t.Logf("Shouldn't be nil")
@@ -57,7 +57,7 @@ func TestRegisterFunction_Function_Duplicate(t *testing.T) {
 }
 
 func TestRegisterFunction(t *testing.T) {
-	var err = operation.RegisterFunction("double", double)
+	err := operation.RegisterFunction("double", double)
 
 	if err != nil {
 		t.Logf("Should be nil but got %s", err)
@@ -72,22 +72,22 @@ func double(val float64) float64 {
 }
 
 func testFunc(function operation.OpFunc, val, expected float64, t *testing.T) {
-	var bin = operation.NewFunctionUsingTempFunc(function, operation.NewNumber(val))
+	bin := operation.NewFunctionUsingTempFunc(function, operation.NewNumber(val))
 
-	if bin.Eval().GetNumber() != expected {
-		t.Logf("Should be %f but got %f", expected, bin.Eval().GetNumber())
+	if bin.Eval() != expected {
+		t.Logf("Should be %f but got %f", expected, bin.Eval())
 	}
 }
 
 func testFunction(function string, val, expected float64, t *testing.T) {
-	var bin, err = operation.NewFunction(function, operation.NewNumber(val))
+	bin, err := operation.NewFunction(function, operation.NewNumber(val))
 
 	if err != nil {
 		t.Logf("Should be nil but got %s", err)
 		t.Fail()
 	}
 
-	if bin.Eval().GetNumber() != expected {
-		t.Logf("Should be %f but got %f", expected, bin.Eval().GetNumber())
+	if bin.Eval() != expected {
+		t.Logf("Should be %f but got %f", expected, bin.Eval())
 	}
 }

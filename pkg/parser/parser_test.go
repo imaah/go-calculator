@@ -30,7 +30,7 @@ var failingSamples = [...]string{
 
 func TestParse__passes(t *testing.T) {
 	for sample := range workingSamples {
-		var _, err = ParseV2(sample)
+		_, err := ParseV2(sample)
 
 		if err != nil {
 			t.Logf("%s should pass but doesn't (%s)", sample, err)
@@ -41,7 +41,7 @@ func TestParse__passes(t *testing.T) {
 
 func TestParse__fails(t *testing.T) {
 	for _, sample := range failingSamples {
-		var _, err = ParseV2(sample)
+		_, err := ParseV2(sample)
 
 		if err == nil {
 			t.Logf("%s should fail but doesn't", sample)
@@ -52,10 +52,10 @@ func TestParse__fails(t *testing.T) {
 
 func TestParse__result(t *testing.T) {
 	for sample, result := range workingSamples {
-		var calc, _ = ParseV2(sample)
+		calc, _ := ParseV2(sample)
 
-		if calc.Eval().GetNumber() != result {
-			t.Logf("Got %s but expected %f", calc.Eval().GetString(), result)
+		if calc.Eval() != result {
+			t.Logf("Got %f but expected %f", calc.Eval(), result)
 			t.Fail()
 		}
 	}

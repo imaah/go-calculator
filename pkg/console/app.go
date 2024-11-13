@@ -2,19 +2,19 @@ package console
 
 import (
 	"bufio"
-	"github.com/imaah/go-calculator/pkg/parser"
 	"fmt"
+	"github.com/imaah/go-calculator/pkg/parser"
 	"log"
 	"os"
 	"strings"
 )
 
 func Start() {
-	var running = true
+	running := true
 
 	for running {
 		fmt.Print("> ")
-		var input = ReadLine()
+		input := ReadLine()
 
 		if input == "" {
 			continue
@@ -28,10 +28,10 @@ func Start() {
 		opt, err := parser.ParseV2(input)
 
 		if err != nil {
-			var errFormat = fmt.Errorf("Parsing error: %w\n", err)
+			errFormat := fmt.Errorf("Parsing error: %w\n", err)
 			log.Println(errFormat)
 		} else {
-			fmt.Println("=", opt.Eval().GetString())
+			fmt.Println("=", opt.Eval())
 		}
 	}
 
@@ -39,8 +39,8 @@ func Start() {
 }
 
 func ReadLine() string {
-	var reader = bufio.NewReader(os.Stdin)
-	var line, err = reader.ReadString('\n')
+	reader := bufio.NewReader(os.Stdin)
+	line, err := reader.ReadString('\n')
 
 	if err != nil {
 		log.Fatalln(err)
