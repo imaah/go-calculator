@@ -26,7 +26,7 @@ func (n Number) Asso() byte {
 type Binary rune
 
 func (b Binary) String() string {
-	return fmt.Sprintf("Operator(%c)", rune(b))
+	return fmt.Sprintf("Binary(%c)", rune(b))
 }
 
 func (b Binary) Pred() int {
@@ -48,6 +48,34 @@ func (b Binary) Asso() byte {
 	return 'L'
 }
 
+type Unary rune
+
+func (b Unary) String() string {
+	return fmt.Sprintf("Unary(%c)", rune(b))
+}
+
+func (b Unary) Pred() int {
+	return -1
+}
+
+func (b Unary) Asso() byte {
+	return 'L'
+}
+
+type Constant string
+
+func (f Constant) String() string {
+	return fmt.Sprintf("Constant(%s)", string(f))
+}
+
+func (f Constant) Pred() int {
+	return -1
+}
+
+func (Constant) Asso() byte {
+	return 'L'
+}
+
 type Function string
 
 func (f Function) String() string {
@@ -59,6 +87,20 @@ func (f Function) Pred() int {
 }
 
 func (Function) Asso() byte {
+	return 'L'
+}
+
+type Name string
+
+func (f Name) String() string {
+	return fmt.Sprintf("Name(%s)", string(f))
+}
+
+func (f Name) Pred() int {
+	return -1
+}
+
+func (Name) Asso() byte {
 	return 'L'
 }
 
@@ -87,5 +129,19 @@ func (RParen) Pred() int {
 }
 
 func (RParen) Asso() byte {
+	return 'L'
+}
+
+type Comma struct{}
+
+func (Comma) String() string {
+	return "Comma"
+}
+
+func (Comma) Pred() int {
+	return -1
+}
+
+func (Comma) Asso() byte {
 	return 'L'
 }

@@ -15,7 +15,7 @@ type OpBinary struct {
 	Symbol      rune
 }
 
-func (b *OpBinary) Eval() float64 {
+func (b OpBinary) Eval() float64 {
 	switch b.Symbol {
 	case '+':
 		return b.Left.Eval() + b.Right.Eval()
@@ -49,7 +49,7 @@ func NewBinary(symbol rune, left, right Operation) (Operation, error) {
 			Left:   left,
 			Symbol: symbol,
 		}
-		return &operator, nil
+		return operator, nil
 	}
-	return nil, errors.New(fmt.Sprintf("invalid operator: %c", symbol))
+	return nil, errors.New(fmt.Sprintf("invalid binary operator: %c", symbol))
 }

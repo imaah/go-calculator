@@ -31,6 +31,7 @@ func Start() {
 			errFormat := fmt.Errorf("Parsing error: %w\n", err)
 			log.Println(errFormat)
 		} else {
+			fmt.Println(opt)
 			fmt.Println("=", opt.Eval())
 		}
 	}

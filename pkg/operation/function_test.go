@@ -7,22 +7,13 @@ import (
 )
 
 func TestNew_Function_WrongFunction(t *testing.T) {
-	_, err := operation.NewFunction("a", operation.NewNumber(1))
+	_, err := operation.NewFunction2("a", operation.NewNumber(1))
 
 	if err == nil {
 		t.Logf("Shouldn't be nil but go %s", err)
 		t.Fail()
 	}
 
-}
-
-func TestNew_Function_NilArgument(t *testing.T) {
-	_, err := operation.NewFunction("cos", nil)
-
-	if err == nil {
-		t.Logf("Shouldn't be nil")
-		t.Fail()
-	}
 }
 
 func TestOpFunction_Eval(t *testing.T) {
@@ -32,23 +23,14 @@ func TestOpFunction_Eval(t *testing.T) {
 }
 
 func TestNewUsingTempFunc(t *testing.T) {
-	testFunc(func(val float64) float64 { return double(double(val)) }, 4, 16, t)
-	testFunc(func(val float64) float64 { return val / 4 }, 4, 1, t)
-	testFunc(func(val float64) float64 { return val }, 4, 4, t)
-	testFunc(double, 4, 8, t)
-}
-
-func TestRegisterFunction_Function_NilArgument(t *testing.T) {
-	err := operation.RegisterFunction("double", nil)
-
-	if err == nil {
-		t.Logf("Shouldn't be nil")
-		t.Fail()
-	}
+	testFunc(wrap(func(val float64) float64 { return double(double(val)) }), 4, 16, t)
+	testFunc(wrap(func(val float64) float64 { return val / 4 }), 4, 1, t)
+	testFunc(wrap(func(val float64) float64 { return val }), 4, 4, t)
+	testFunc(wrap(double), 4, 8, t)
 }
 
 func TestRegisterFunction_Function_Duplicate(t *testing.T) {
-	err := operation.RegisterFunction("sin", double)
+	err := operation.RegisterFunction("sin", wrap(double))
 
 	if err == nil {
 		t.Logf("Shouldn't be nil")
@@ -57,7 +39,7 @@ func TestRegisterFunction_Function_Duplicate(t *testing.T) {
 }
 
 func TestRegisterFunction(t *testing.T) {
-	err := operation.RegisterFunction("double", double)
+	err := operation.RegisterFunction("double", wrap(double))
 
 	if err != nil {
 		t.Logf("Should be nil but got %s", err)
@@ -67,12 +49,21 @@ func TestRegisterFunction(t *testing.T) {
 	testFunction("double", 4, 8, t)
 }
 
+func wrap(fn func(float64) float64) operation.OpFunc {
+	return operation.OpFunc{
+		Func: func(o []operation.Operation) float64 {
+			return fn(o[0].Eval())
+		},
+		NbArgs: 1,
+	}
+}
+
 func double(val float64) float64 {
 	return val * 2
 }
 
 func testFunc(function operation.OpFunc, val, expected float64, t *testing.T) {
-	bin := operation.NewFunctionUsingTempFunc(function, operation.NewNumber(val))
+	bin := operation.NewFunctionUsingTempFunc("temp", function, operation.NewNumber(val))
 
 	if bin.Eval() != expected {
 		t.Logf("Should be %f but got %f", expected, bin.Eval())
@@ -80,7 +71,7 @@ func testFunc(function operation.OpFunc, val, expected float64, t *testing.T) {
 }
 
 func testFunction(function string, val, expected float64, t *testing.T) {
-	bin, err := operation.NewFunction(function, operation.NewNumber(val))
+	bin, err := operation.NewFunction2(function, operation.NewNumber(val))
 
 	if err != nil {
 		t.Logf("Should be nil but got %s", err)

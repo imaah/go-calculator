@@ -9,7 +9,9 @@ import (
 
 func Evaluate(tokens []Token) (operation.Operation, error) {
 	s := &stack.Stack[operation.Operation]{}
+	commaNumber := 0
 
+	fmt.Println(tokens)
 	for i := 0; i < len(tokens); i++ {
 		tok := tokens[i]
 		switch t := tok.(type) {
@@ -29,20 +31,47 @@ func Evaluate(tokens []Token) (operation.Operation, error) {
 			}
 
 			s.Push(op)
-		case Function:
+		case Unary:
 			if s.Len() < 1 {
-				return nil, fmt.Errorf("no value found for function")
+				return nil, fmt.Errorf("no value found for binary operator")
 			}
 
-			x := s.Pop()
+			r := s.Pop()
 
-			f, err := operation.NewFunction(string(t), x)
+			op, err := operation.NewUnary(rune(t), r)
+			if err != nil {
+				return nil, err
+			}
+
+			s.Push(op)
+		case Constant:
+			f, err := operation.NewConstant(string(t))
 
 			if err != nil {
 				return nil, err
 			}
 
 			s.Push(f)
+		case Function:
+			if s.Len() < commaNumber+1 {
+				return nil, fmt.Errorf("not enough value found for function")
+			}
+
+			values := make([]operation.Operation, commaNumber+1)
+
+			for i := range commaNumber + 1 {
+				values[commaNumber-i] = s.Pop()
+			}
+
+			f, err := operation.NewFunction2(string(t), values...)
+			commaNumber = 0
+			if err != nil {
+				return nil, err
+			}
+
+			s.Push(f)
+		case Comma:
+			commaNumber++
 		}
 	}
 
@@ -62,17 +91,31 @@ func TokensToPostfix(tokens []Token) ([]Token, error) {
 		switch tok.(type) {
 		case Number:
 			val = append(val, tok)
-		case Function:
+		case Name:
 			if len(tokens) <= i+1 {
-				return nil, fmt.Errorf("missing left parenthesis after function name")
+				val = append(val, Constant(tok.(Name)))
+				break
 			}
 			_, ok := tokens[i+1].(LParen)
 			if !ok {
-				return nil, fmt.Errorf("missing left parenthesis after function name")
+				val = append(val, Constant(tok.(Name)))
+				break
 			}
 			i++
-			s.Push(tok)
+			s.Push(Function(tok.(Name)))
 		case LParen:
+			s.Push(tok)
+		case Comma:
+		loopc:
+			for !s.IsEmpty() {
+				t := s.Top()
+				switch t.(type) {
+				case Function, Comma:
+					break loopc
+				default:
+					val = append(val, s.Pop())
+				}
+			}
 			s.Push(tok)
 		case RParen:
 		loop:
@@ -92,6 +135,8 @@ func TokensToPostfix(tokens []Token) ([]Token, error) {
 			for !s.IsEmpty() && tok.Pred() <= s.Top().Pred() && tok.Asso() == 'L' {
 				val = append(val, s.Pop())
 			}
+			s.Push(tok)
+		case Unary:
 			s.Push(tok)
 		}
 	}

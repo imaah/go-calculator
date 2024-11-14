@@ -114,16 +114,6 @@ func tokenizeNumber(str string, i int) (Token, int, error) {
 	var err error
 	n := 0.0
 
-	negate := false
-	if slices.Contains(unaryOperators, str[i]) {
-		negate = str[i] == '-'
-		i++
-
-		if i >= len(str) {
-			return nil, 0, fmt.Errorf("got '-' at the end of the string")
-		}
-	}
-
 	if str[i] == '0' && len(str) > i+1 {
 		i++
 		switch str[i] {
@@ -148,16 +138,10 @@ func tokenizeNumber(str string, i int) (Token, int, error) {
 		return nil, 0, err
 	}
 
-	if !negate {
-		return Number(n), i, nil
-	}
-
-	n = -n
-
 	return Number(n), i, nil
 }
 
-func tokenizeFunction(str string, i int) (Token, int, error) {
+func tokenizeName(str string, i int) (Token, int, error) {
 	function := strings.Builder{}
 
 loop:
@@ -172,26 +156,22 @@ loop:
 		i++
 	}
 
-	return Function(function.String()), i, nil
+	return Name(function.String()), i, nil
 }
 
 func tokenizeOperator(str string, i int, prev Token) (Token, int, error) {
 	v := str[i]
 
 	if prev == nil {
-		return nil, i, nil
-	} else if _, ok := prev.(LParen); ok {
-		return nil, i, nil
-	} else if _, ok := prev.(Binary); ok {
-		return nil, i, nil
+		return Unary(v), i + 1, nil
 	}
 
-	switch {
-	case slices.Contains(operators, v):
-		return Binary(str[i]), i + 1, nil
+	switch prev.(type) {
+	case LParen, Binary, Unary, Comma:
+		return Unary(v), i + 1, nil
+	default:
+		return Binary(v), i + 1, nil
 	}
-
-	return nil, 0, fmt.Errorf("invalid operator: %c", str[i])
 }
 
 func tokenize(str string, i int, prev Token) (Token, int, error) {
@@ -205,12 +185,8 @@ func tokenize(str string, i int, prev Token) (Token, int, error) {
 			return nil, i, fmt.Errorf("failed to tokenize operator: %w", err)
 		}
 
-		if tok != nil {
-			return tok, i, nil
-		}
-
-		fallthrough
-	case slices.Contains(decNums, v) || slices.Contains(unaryOperators, v):
+		return tok, i, nil
+	case slices.Contains(decNums, v):
 		tok, i, err := tokenizeNumber(str, i)
 
 		if err != nil {
@@ -219,13 +195,15 @@ func tokenize(str string, i int, prev Token) (Token, int, error) {
 
 		return tok, i, nil
 	case slices.Contains(alpha, v):
-		tok, i, err := tokenizeFunction(str, i)
+		tok, i, err := tokenizeName(str, i)
 
 		if err != nil {
 			return nil, i, fmt.Errorf("failed to tokenize operator: %w", err)
 		}
 
 		return tok, i, nil
+	case v == ',':
+		return Comma{}, i + 1, nil
 	case v == '(':
 		return LParen{}, i + 1, nil
 	case v == ')':

@@ -12,6 +12,7 @@ var workingSamples = map[string]float64{
 	"cos(12)":                   math.Cos(12),
 	"-1 * cos(4)":               -math.Cos(4),
 	"(125 - 4) * (-1) * sin(8)": (125 - 4) * -math.Sin(8),
+	"max(-15, 7)":               math.Max(-15, 7),
 	"8":                         8,
 	"-8":                        -8,
 }
@@ -52,7 +53,13 @@ func TestParse__fails(t *testing.T) {
 
 func TestParse__result(t *testing.T) {
 	for sample, result := range workingSamples {
-		calc, _ := ParseV2(sample)
+		calc, err := ParseV2(sample)
+
+		if err != nil {
+			t.Logf("Got an error %v", err)
+			t.Fail()
+			continue
+		}
 
 		if calc.Eval() != result {
 			t.Logf("Got %f but expected %f", calc.Eval(), result)
